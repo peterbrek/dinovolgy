@@ -1,6 +1,6 @@
 // Dínóvölgy offline cache.
-// Ha frissíted az appot, írd át a verziószámot (v1 -> v2), hogy az iPad is az új fájlokat töltse le.
-const CACHE = 'dinovolgy-v1';
+// Ha frissíted az appot, írd át a verziószámot (pl. v2 -> v3), hogy az iPad is az új fájlokat töltse le.
+const CACHE = 'dinovolgy-v2';
 
 const ASSETS = [
   './',

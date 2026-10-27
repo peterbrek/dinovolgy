@@ -1,6 +1,10 @@
 # Dínóvölgy
 
-Montessori-szerű számolós iPad-játék dínókkal: tojásszámlálás, összeadás (Bogyólakoma) és sorba rendezés (Kőösvény). Minden befejezett kör egy tojást ér, három tojásból kikel egy új dínó.
+Montessori-szerű, néma számolós iPad-játék dínókkal, 100-as számkörben. Minden befejezett kör egy tojást ér, három tojásból kikel egy új dínó.
+
+- **Tojásszámlálás:** a tojások 10-es tartókban vannak. A tartókat tízesével kell megszámolni (10, 20, 30…), a maradék tojásokat egyesével.
+- **Bogyólakoma:** összeadás 100-ig. Trici kap tízes fürtöket és egyes bogyókat. Ha a tálban 10 egyes bogyó összegyűlik, azok automatikusan egy tízes fürtté állnak össze, így látszik a tízesátlépés.
+- **Kőösvény:** öt számkő 1 és 100 között, sorba kell rakni őket. Gyakran van köztük felcserélt számjegyű pár (pl. 27 és 72).
 
 Az app egyetlen statikus weboldal. Nincs szükség szerverre, fiókra vagy telepítésre, és az első betöltés után internet nélkül is működik.
 
@@ -14,6 +18,12 @@ Az app egyetlen statikus weboldal. Nincs szükség szerverre, fiókra vagy telep
 6. Várj 1–2 percet. A Pages oldal tetején megjelenik a cím, például:
    `https://<felhasználóneved>.github.io/dinovolgy/`
 
+### Ha az előző változat már fent van
+
+Elég az `index.html`, a `sw.js` és a `README.md` fájlt újra feltölteni (**Add file → Upload files**, ugyanazzal a névvel), a többi nem változott. 1–2 perc múlva nyisd meg az appot az iPaden internettel, zárd be teljesen (az alkalmazásváltóban felhúzva), majd indítsd újra.
+
+A korábbi haladás megmarad, és automatikusan átáll 100-as számkörre és Vilci nevére.
+
 ## iPadre telepítés
 
 1. Nyisd meg a címet **Safariban**.
@@ -26,20 +36,23 @@ Tipp: fekvő helyzetben a legnagyobb a játéktér.
 
 A kezdőképernyő jobb felső sarkában lévő lakat ikont **2 másodpercig tartsd lenyomva**. Itt beállíthatod:
 
-- a gyermek nevét,
-- a számkört (10-ig vagy 20-ig),
+- a gyermek nevét (alapból Vilci),
+- a számkört: 10-ig, 20-ig vagy 100-ig (alapból 100-ig),
 - hány feladat legyen egy körben (3 vagy 5),
-- melyik játék legyen elérhető,
-- a felolvasást, a hangos számolást és a hangeffekteket.
+- melyik játék legyen elérhető.
 
-Itt látod a haladást is.
+Itt látod a haladást is, és itt van a **mentőkód**.
 
-## Jó tudni
+## Mentés
 
-- **Mentés:** a haladás azon az eszközön, abban a böngészőben marad meg, ahol a gyerek játszik. A kezdőképernyőre tett app és a Safari külön tárolót használ, ezért mindig a kezdőképernyős ikonról induljatok. Ha törlöd az ikont, a haladás is törlődik.
-- **Felolvasás:** az iPad beépített magyar hangját használja. Ha angolosan szól, a magyar hangot itt töltheted le: **Beállítások → Kisegítő lehetőségek → Felolvasott tartalom → Hangok → Magyar**.
-- **Nincs hang?** Nézd meg, hogy nincs-e lenémítva az iPad.
-- **Frissítés:** ha később lecseréled valamelyik fájlt, a `sw.js` elején írd át a verziót (`dinovolgy-v1` → `dinovolgy-v2`). Így az iPad biztosan az új változatot tölti le. Ehhez egyszer internettel kell megnyitni az appot, utána pedig bezárni és újraindítani.
+- A haladás (tojások, kikelt dínók, nevek, beállítások) **minden lépés után** elmentődik az iPadre. A félbehagyott kör is mentődik: újratöltés vagy bezárás után ugyanott folytatódik.
+- A mentés ahhoz a helyhez tartozik, ahol a gyerek játszik. **A Safari és a kezdőképernyős ikon külön tárol**, ezért mindig az ikonról induljatok.
+- **Mentőkód:** a szülői sarokban a *Mentőkód másolása* gomb vágólapra teszi a teljes haladást egy szövegként. A másik helyen (másik iPad, vagy Safari helyett a kezdőképernyős app) a *Mentőkód betöltése* gombbal visszatölthető. Ha törölni szeretnéd az ikont, előtte másold ki a kódot, és tedd el például egy jegyzetbe.
+- A Safari a ritkán megnyitott weboldalak adatait idővel törölheti. A kezdőképernyőre tett appra ez nem vonatkozik.
+
+## Frissítés
+
+Ha később lecseréled valamelyik fájlt, a `sw.js` elején írd át a verziót (`dinovolgy-v2` → `dinovolgy-v3`). Így az iPad biztosan az új változatot tölti le. Ehhez egyszer internettel kell megnyitni az appot, utána pedig bezárni és újraindítani.
 
 ## Fájlok
 

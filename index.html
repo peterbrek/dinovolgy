@@ -64,9 +64,7 @@ h1,h2{text-wrap:balance}
 .round-btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(46,58,51,.14)}
 .abs-tl{position:absolute;top:28px;left:40px;z-index:5}
 .topbar{position:absolute;top:28px;left:40px;right:40px;height:72px;display:flex;align-items:center;justify-content:space-between;gap:20px;z-index:4}
-.instr{display:flex;align-items:center;gap:14px;padding:10px 28px 10px 10px;background:var(--card);border-radius:999px;box-shadow:var(--lift);font-size:24px;font-weight:600;line-height:1.2;min-width:0}
-.speak{width:52px;height:52px;flex:none;border-radius:999px;background:var(--sun);display:flex;align-items:center;justify-content:center}
-.speak:active{transform:scale(.94)}
+.instr{display:flex;align-items:center;gap:14px;padding:18px 30px;background:var(--card);border-radius:999px;box-shadow:var(--lift);font-size:24px;font-weight:600;line-height:1.2;min-width:0}
 .dots{display:flex;align-items:center;gap:8px;flex:none}
 .dot{width:14px;height:14px;border-radius:999px;background:var(--line);display:inline-block}
 .dot.on{background:var(--leaf)}
@@ -147,6 +145,15 @@ h1,h2{text-wrap:balance}
 .egg.pop .badge{animation:pop .35s cubic-bezier(.3,1.6,.5,1)}
 @keyframes pop{from{transform:scale(.2)}to{transform:scale(1)}}
 .side-col{position:absolute;top:124px;display:flex;flex-direction:column;justify-content:space-between;align-items:center}
+.cnt-lab{position:absolute;top:18px;font-size:19px;font-weight:700;color:var(--ink-soft)}
+.carton{position:absolute;width:164px;height:96px}
+.legg{position:absolute;width:52px;height:64px}
+.carton svg,.legg svg{display:block;transition:transform .12s}
+.carton:active svg,.legg:active svg{transform:scale(.95)}
+.carton .badge,.legg .badge{position:absolute;border-radius:999px;background:var(--leaf);color:#FFFFFF;font-weight:700;display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}
+.carton .badge{width:64px;height:64px;left:50px;top:16px;font-size:32px;box-shadow:0 0 0 4px rgba(251,247,239,.75)}
+.legg .badge{width:42px;height:42px;left:5px;top:14px;font-size:21px}
+.carton.pop .badge,.legg.pop .badge{animation:pop .35s cubic-bezier(.3,1.6,.5,1)}
 
 /* addition */
 .equation{position:absolute;top:116px;left:0;right:0;display:flex;justify-content:center;align-items:center;gap:18px}
@@ -169,6 +176,21 @@ h1,h2{text-wrap:balance}
 .cell{height:56px;border-radius:16px;background:var(--paper);display:flex;align-items:center;justify-content:center}
 .cell span{width:40px;height:40px;border-radius:999px}
 .cell span.new{animation:pop .3s cubic-bezier(.3,1.6,.5,1)}
+.pile{height:150px;box-sizing:border-box;border-radius:20px;background:var(--paper);display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:10px 6px 8px;flex:none}
+.pile svg{display:block}
+.pile.tens{width:164px}
+.pile.ones{width:80px}
+.pile:active{transform:scale(.96)}
+.pile:disabled{background:transparent;box-shadow:inset 0 0 0 3px #E2D8C6;cursor:default}
+.pile:disabled:active{transform:none}
+.pile-lab{font-size:16px;font-weight:700;color:var(--ink-soft)}
+.mat{box-sizing:border-box;padding:10px;background:#B98552;border-radius:22px;display:flex;gap:10px}
+.mat-col{box-sizing:border-box;background:var(--paper);border-radius:16px;padding:8px 10px 12px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.mat-col.tens{width:196px}
+.mat-col.ones{width:126px}
+.mat-lab{font-size:16px;font-weight:700;color:var(--ink-soft)}
+.mat svg{display:block}
+.pv-new{animation:pop .3s cubic-bezier(.3,1.6,.5,1);transform-box:fill-box;transform-origin:50% 100%}
 
 /* ordering */
 .river-panel{position:absolute;left:40px;top:124px;width:1100px;height:420px;border-radius:40px;background:#A9C79E;overflow:hidden}
@@ -289,10 +311,11 @@ h1,h2{text-wrap:balance}
 .chipt{padding:9px 16px;border-radius:999px;border:2px solid var(--line);font-family:var(--body);font-size:17px;font-weight:700;display:flex;align-items:center;gap:6px}
 .chipt[aria-pressed="true"]{border-color:var(--leaf);background:var(--leaf-wash)}
 .chipt[aria-pressed="false"]{color:var(--ink-soft)}
-.switch{position:relative;width:64px;height:36px;flex:none;border-radius:999px;background:var(--line)}
-.switch::after{content:"";position:absolute;left:4px;top:4px;width:28px;height:28px;border-radius:999px;background:#FFFFFF;transition:left .15s}
-.switch[aria-checked="true"]{background:var(--leaf)}
-.switch[aria-checked="true"]::after{left:32px}
+.bk-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;width:100%}
+.bk-in{flex:1;min-width:0;font-family:var(--body);font-size:16px;font-weight:600;color:var(--ink);padding:10px 12px;border-radius:12px;border:2px solid var(--line);background:#FFFFFF;box-sizing:border-box}
+#bk-out{width:100%}
+.pnote.ok{color:var(--leaf)}
+.pnote.err{color:var(--danger)}
 .tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .tile{background:var(--paper);border-radius:20px;padding:14px 16px;display:flex;flex-direction:column;gap:2px}
 .tile b{font-family:var(--display);font-size:38px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}
@@ -329,11 +352,9 @@ const TOPSHELL = "M-62 4 C-62 -50 -34 -90 0 -90 C34 -90 62 -50 62 4 L46 -10 L31 
 const BOTSHELL = "M-62 4 L-46 -10 L-31 4 L-15 -10 L0 4 L15 -10 L31 4 L46 -10 L62 4 C62 50 34 72 0 72 C-34 72 -62 50 -62 4 Z";
 const STAR = "M0 -14 L4 -4 L14 0 L4 4 L0 14 L-4 4 L-14 0 L-4 -4 Z";
 const SPOTS = [[[-8,-10,3.5],[9,4,4.5],[-6,18,3]],[[6,-12,4],[-9,6,3.5],[8,16,3]],[[-6,-12,4],[10,0,3.5],[-4,14,4.5]]];
-const NUMW = ['nulla','egy','kettő','három','négy','öt','hat','hét','nyolc','kilenc','tíz','tizenegy','tizenkettő','tizenhárom','tizennégy','tizenöt','tizenhat','tizenhét','tizennyolc','tizenkilenc','húsz'];
 
 const ICON = {
   home:'<svg aria-hidden="true" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#2E3A33" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>',
-  speaker:'<svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2E3A33" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>',
   lock:'<svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2E3A33" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
   play:'<svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24"><path d="M9 6l9 6-9 6z" fill="#FBF7EF"/></svg>',
   arrow:'<svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>',
@@ -369,8 +390,8 @@ const SLOTS = {
   potyi:{x:668,y:272,s:.5}, trombi:{x:800,y:250,s:.5}, anki:{x:950,y:248,s:.5}, szarnyi:{x:330,y:116,s:.45,fly:true}
 };
 const GAMES = {
-  count:{name:'Tojásszámlálás', instr:'Érintsd meg a tojásokat egyenként, és számold meg őket!'},
-  add:{name:'Bogyólakoma', instr:'Tedd a bogyókat Trici tálába, aztán add össze őket!'},
+  count:{name:'Tojásszámlálás', instr:'Érintsd meg a tojásokat egyenként, és számold meg őket!', instrBig:'Számold meg a tojásokat! Egy tartóban 10 tojás van.'},
+  add:{name:'Bogyólakoma', instr:'Tedd a bogyókat Trici tálába, aztán add össze őket!', instrBig:'Add Tricinek a fürtöket és a bogyókat, aztán add össze!'},
   order:{name:'Kőösvény', instr:'Rakd a köveket sorba, a legkisebbtől a legnagyobbig!'}
 };
 
@@ -387,6 +408,11 @@ function choices(c, lo, hi){
   const rest = shuffle(adj.concat(far).filter(x=>x!==first));
   return [c, first, rest[0]].sort((a,b)=>a-b);
 }
+function choices100(c){
+  const ok = x => x>=1 && x<=100;
+  const tens = [c-10,c+10].filter(ok), ones = [c-1,c+1].filter(ok);
+  return [c, pick(tens), pick(ones)].sort((a,b)=>a-b);
+}
 const dinoById = id => DINOS.find(d=>d.id===id);
 const dinoName = id => (P.names && P.names[id]) || dinoById(id).name;
 const allHatched = () => DINOS.every(d=>P.hatched.includes(d.id));
@@ -397,8 +423,8 @@ function eggSVG(w,h,fill,spot,set,stroke){ const sp = SPOTS[set||0].map(([x,y,r]
 /* ---------- persistence ---------- */
 const LS_KEY = 'dinovolgy.progress.v1';
 function defaults(){
-  return { v:1, updatedAt:0, eggs:0, totalEggs:0, pendingHatch:false, hatched:['bronti','trici'], names:{}, newIds:[],
-    settings:{ kidName:'', level:1, roundLen:3, voice:true, countAloud:true, sound:true, games:{count:true, add:true, order:true} },
+  return { v:2, updatedAt:0, eggs:0, totalEggs:0, pendingHatch:false, hatched:['bronti','trici'], names:{}, newIds:[],
+    settings:{ kidName:'Vilci', level:3, roundLen:3, games:{count:true, add:true, order:true} },
     stats:{ solved:{count:0, add:0, order:0}, rounds:0, days:{} } };
 }
 function normalize(p){
@@ -415,9 +441,24 @@ function normalize(p){
   o.names = Object.assign({}, p.names||{});
   o.newIds = Array.isArray(p.newIds) ? p.newIds.filter(id=>ART[id]) : [];
   if(o.pendingHatch && !nextDinoOf(o)) o.pendingHatch = false;
+  if(!(p.v >= 2)){ o.settings.level = 3; if(!o.settings.kidName) o.settings.kidName = 'Vilci'; }
+  o.v = 2;
+  if(![1,2,3].includes(o.settings.level)) o.settings.level = 3;
+  delete o.settings.voice; delete o.settings.countAloud; delete o.settings.sound;
   return o;
 }
 function nextDinoOf(o){ return DINOS.find(d=>!o.hatched.includes(d.id)); }
+function progressScore(o){ return (o.hatched ? o.hatched.length : 0)*1000 + (o.totalEggs||0)*10 + (o.eggs||0); }
+function backupCode(){ try{ return 'DV1.' + btoa(unescape(encodeURIComponent(JSON.stringify(P)))); }catch(e){ return ''; } }
+function readBackup(code){
+  try{
+    const c = String(code||'').replace(/\s+/g,'');
+    if(c.slice(0,4)!=='DV1.') return null;
+    const o = JSON.parse(decodeURIComponent(escape(atob(c.slice(4)))));
+    if(!o || typeof o!=='object' || !Array.isArray(o.hatched) || !o.settings) return null;
+    return normalize(o);
+  }catch(e){ return null; }
+}
 function loadLocal(){ try{ const raw = localStorage.getItem(LS_KEY); return raw ? normalize(JSON.parse(raw)) : defaults(); }catch(e){ return defaults(); } }
 function saveLocal(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(P)); }catch(e){} }
 let P = loadLocal();
@@ -426,49 +467,34 @@ function save(){
   saveLocal();
 }
 
-/* ---------- sound & voice ---------- */
-let ac = null;
-function tone(freq, dur, type, gain, when){
-  if(!P.settings.sound) return;
-  try{
-    ac = ac || new (window.AudioContext || window.webkitAudioContext)();
-    if(ac.state==='suspended') ac.resume();
-    const t = ac.currentTime + (when||0);
-    const o = ac.createOscillator(), g = ac.createGain();
-    o.type = type||'sine'; o.frequency.setValueAtTime(freq, t);
-    g.gain.setValueAtTime(0.0001, t);
-    g.gain.exponentialRampToValueAtTime(gain||0.07, t+0.012);
-    g.gain.exponentialRampToValueAtTime(0.0001, t+(dur||0.12));
-    o.connect(g); g.connect(ac.destination);
-    o.start(t); o.stop(t+(dur||0.12)+0.03);
-  }catch(e){}
-}
-const sfx = {
-  pop(){ tone(620+Math.random()*120, .09, 'sine', .07); },
-  soft(){ tone(300, .16, 'triangle', .06); tone(260, .18, 'triangle', .05, .1); },
-  chime(){ [523,659,784].forEach((f,i)=>tone(f, .24, 'sine', .07, i*.09)); },
-  knock(){ tone(180, .07, 'square', .03); tone(140, .07, 'square', .03, .08); },
-  hatch(){ [523,659,784,1047].forEach((f,i)=>tone(f, .32, 'sine', .07, i*.1)); },
-  hop(){ tone(440, .08, 'sine', .05); }
-};
-let huVoice = null;
-function pickVoice(){ try{ const vs = window.speechSynthesis.getVoices(); huVoice = vs.find(v=>/^hu/i.test(v.lang)) || null; }catch(e){} }
-if('speechSynthesis' in window){ pickVoice(); try{ window.speechSynthesis.onvoiceschanged = pickVoice; }catch(e){} }
-function say(text, force){
-  if(!force && !P.settings.voice) return;
-  try{
-    const s = window.speechSynthesis; if(!s) return;
-    s.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = 'hu-HU'; if(huVoice) u.voice = huVoice;
-    u.rate = 0.92; u.pitch = 1.08;
-    s.speak(u);
-  }catch(e){}
-}
-function sayNumber(n){ if(P.settings.countAloud) say(NUMW[n] || String(n), true); }
-
 /* ---------- session state ---------- */
-let S = { screen:'home', game:null, lastGame:'count', hatch:null, dexSel:null, dexEdit:false, confirmReset:false };
+let S = { screen:'home', game:null, lastGame:'count', hatch:null, dexSel:null, dexEdit:false, confirmReset:false, bk:null };
+const SS_KEY = 'dinovolgy.session.v1';
+function saveSession(){
+  try{
+    const screen = S.screen==='parent' ? 'home' : S.screen;
+    localStorage.setItem(SS_KEY, JSON.stringify({ at:Date.now(), screen, game:S.game, lastGame:S.lastGame, hatch:S.hatch, dexSel:S.dexSel }));
+  }catch(e){}
+}
+function restoreSession(){
+  try{
+    const raw = localStorage.getItem(SS_KEY); if(!raw) return;
+    const d = JSON.parse(raw);
+    if(!d || typeof d!=='object' || Date.now() - (d.at||0) > 14*24*3600*1000) return;
+    if(GAMES[d.lastGame]) S.lastGame = d.lastGame;
+    if(d.dexSel && ART[d.dexSel]) S.dexSel = d.dexSel;
+    if(d.screen==='game' && d.game && d.game.task && GAMES[d.game.task.type]){
+      S.game = d.game; S.screen = 'game';
+      const t = S.game.task;
+      if(t.type==='order' && !t.solved && t.k>=t.sorted.length){ t.k = t.sorted.length - 1; t.crossed = false; }
+    } else if(d.screen==='hatch' && d.hatch && ART[d.hatch.id] && (d.hatch.opened || P.pendingHatch)){
+      S.hatch = d.hatch; S.hatch.editing = false; S.screen = 'hatch';
+      if(!S.hatch.opened && S.hatch.stage>=3) S.hatch.stage = 2;
+    } else if(d.screen==='success' || d.screen==='dex'){
+      S.screen = d.screen;
+    }
+  }catch(e){}
+}
 
 /* ---------- tasks ---------- */
 function makeEggs(n){
@@ -490,17 +516,31 @@ function makeEggs(n){
 function newTask(type){
   const L = P.settings.level;
   if(type==='count'){
+    if(L===3){ const n = ri(21,99); return { type, big:true, n, tens:Math.floor(n/10), ones:n%10, set:ri(0,2), order:[], choices:choices100(n), wrong:false, solved:false, pop:null, wig:null }; }
     const n = L===1 ? ri(4,10) : ri(9,20);
     return { type, n, eggs:makeEggs(n), order:[], choices:choices(n,1,20), wrong:false, solved:false, pop:-1, wig:null };
   }
   if(type==='add'){
+    if(L===3){
+      let a, b;
+      do{ a = ri(12,79); b = ri(4,59); } while(a+b > 99 || a+b < 25);
+      return { type, big:true, a, b, pa:{t:Math.floor(a/10), o:a%10}, pb:{t:Math.floor(b/10), o:b%10}, bars:[], ones:[], fresh:null, choices:choices100(a+b), wrong:false, solved:false, wig:null };
+    }
     let a, b;
     if(L===1){ const s = ri(3,10); a = ri(1,s-1); b = s-a; }
     else { let s; do{ a=ri(2,10); b=ri(2,10); s=a+b; } while(s<8 || s>18 || (s<=10 && Math.random()<0.7)); }
     return { type, a, b, tA:Array(a).fill(false), tB:Array(b).fill(false), seq:[], choices:choices(a+b,1,20), wrong:false, solved:false, wig:null };
   }
-  const k = L===1 ? 4 : 5, max = L===1 ? 10 : 20;
+  const k = L===1 ? 4 : 5, max = L===1 ? 10 : L===2 ? 20 : 100;
   const set = new Set(); while(set.size<k) set.add(ri(1,max));
+  if(L===3 && Math.random()<0.6){
+    const arr = [...set];
+    const cand = arr.filter(x=>x>=12 && x<=98 && x%10!==0 && Math.floor(x/10)!==x%10);
+    if(cand.length){
+      const x = pick(cand), r = (x%10)*10 + Math.floor(x/10);
+      if(!set.has(r)){ set.delete(pick(arr.filter(y=>y!==x))); set.add(r); }
+    }
+  }
   const sorted = [...set].sort((x,y)=>x-y);
   let bank; do{ bank = shuffle(sorted.slice()); } while(bank.every((v,i)=>v===sorted[i]));
   return { type, sorted, bank, k:0, hint:false, solved:false, crossed:false, wig:null };
@@ -509,13 +549,13 @@ function newTask(type){
 /* ---------- screens ---------- */
 const stage = document.getElementById('stage');
 
-function topBar(type, idx, total, solved){
+function topBar(type, idx, total, solved, big){
   const done = idx + (solved?1:0);
   let dots = '';
   for(let i=0;i<total;i++) dots += `<span class="dot ${i<done?'on':''}" aria-hidden="true"></span>`;
   return `<div class="topbar">
     <button class="round-btn" data-act="home" aria-label="Vissza a völgybe">${ICON.home}</button>
-    <div class="instr"><button class="speak" data-act="speak" aria-label="Felolvasás">${ICON.speaker}</button><span>${GAMES[type].instr}</span></div>
+    <div class="instr"><span>${big && GAMES[type].instrBig ? GAMES[type].instrBig : GAMES[type].instr}</span></div>
     <div class="dots">${dots}<b>${Math.min(idx+1,total)}/${total}</b></div>
   </div>`;
 }
@@ -587,6 +627,7 @@ function homeHTML(){
 
 /* counting */
 function countBody(t){
+  if(t.big) return countBigBody(t);
   const counted = t.order.length;
   let msg;
   if(t.solved) msg = 'Köszönöm! Most már tudom, hány tojásom van.';
@@ -618,6 +659,58 @@ function countBody(t){
   ${t.solved ? doneSheet(`Igen! ${t.n} tojás van a fészekben.`) : answerRow('Hány tojás van a fészekben?', t)}`;
 }
 
+function cartonSVG(set){
+  const pals = ['#E8945A','#8FB08A','#7FA9BF'];
+  let cups = '';
+  for(let r=0;r<2;r++) for(let c=0;c<5;c++){
+    const x = 26 + c*28, y = 30 + r*34, col = pals[(r*5+c+set)%3];
+    cups += `<ellipse cx="${x}" cy="${y+11}" rx="12" ry="5" fill="#A87A4C"/><g transform="translate(${x} ${y}) scale(.4)"><path d="${EGG}" fill="#FBF4E6" stroke="#2E3A33" stroke-width="3.5"/><circle cx="-6" cy="-8" r="5" fill="${col}"/><circle cx="7" cy="7" r="6" fill="${col}"/></g>`;
+  }
+  return `<svg aria-hidden="true" width="164" height="96" viewBox="0 0 164 96"><rect x="3" y="6" width="158" height="86" rx="16" fill="#C99A68" stroke="#9C6B3E" stroke-width="3"/>${cups}</svg>`;
+}
+function countBigBody(t){
+  const sums = {}; let acc = 0;
+  t.order.forEach(k=>{ acc += k[0]==='c' ? 10 : 1; sums[k] = acc; });
+  const counted = t.order.length, total = t.tens + t.ones;
+  const cDone = t.order.filter(k=>k[0]==='c').length;
+  let msg;
+  if(t.solved) msg = 'Köszönöm! Most már tudom, hány tojásom van.';
+  else if(t.wrong) msg = 'Majdnem! Számoljuk újra: először a tartókat, tízesével.';
+  else if(counted===0) msg = 'Egy tartóban 10 tojás van. Számold a tartókat tízesével: 10, 20, 30…';
+  else if(counted===total) msg = 'Mindet megszámoltad! Mi volt az utolsó szám?';
+  else if(cDone===t.tens && counted===t.tens && t.ones>0) msg = 'Most jöhetnek a tojások egyesével!';
+  else msg = 'Ügyes! Folytasd!';
+  const popK = t.pop; t.pop = null;
+  const rows = Math.max(1, Math.ceil(t.tens/3)), ch = rows*96 + (rows-1)*24, y0 = 56 + Math.round((432-ch)/2);
+  const pals = ['#E8945A','#8FB08A','#7FA9BF'];
+  let items = '';
+  for(let i=0;i<t.tens;i++){
+    const k = 'c'+i, x = 24 + (i%3)*176, y = y0 + Math.floor(i/3)*120;
+    const badge = sums[k] ? `<span class="badge">${sums[k]}</span>` : '';
+    items += `<button class="carton ${popK===k?'pop':''}" data-act="cnt" data-k="${k}" aria-label="${sums[k] ? sums[k]+', megszámolt tartó' : 'Tojástartó, 10 tojás'}" style="left:${x}px;top:${y}px">${cartonSVG((i+t.set)%3)}${badge}</button>`;
+  }
+  for(let i=0;i<t.ones;i++){
+    const k = 'e'+i, x = 576 + (i%3)*58, y = 170 + Math.floor(i/3)*70;
+    const badge = sums[k] ? `<span class="badge">${sums[k]}</span>` : '';
+    items += `<button class="legg ${popK===k?'pop':''}" data-act="cnt" data-k="${k}" aria-label="${sums[k] ? sums[k]+', megszámolt tojás' : 'Tojás'}" style="left:${x}px;top:${y}px">${eggSVG(52,64,'#FBF4E6',pals[(i+t.set)%3],(i+t.set)%3)}${badge}</button>`;
+  }
+  return `<div class="nest-panel">
+    <svg aria-hidden="true" width="760" height="512" viewBox="0 0 760 512">
+      <g fill="#CFE0C3"><ellipse cx="60" cy="490" rx="90" ry="34"/><ellipse cx="420" cy="500" rx="120" ry="30"/></g>
+      <rect x="560" y="148" width="190" height="252" rx="48" fill="#B98552"/>
+      <rect x="570" y="158" width="170" height="232" rx="40" fill="#D6AE78"/>
+    </svg>
+    <span class="cnt-lab" style="left:28px">Tojástartók</span>
+    <span class="cnt-lab" style="left:574px">Egyes tojások</span>
+    ${items}
+  </div>
+  <div class="side-col" style="left:828px;width:312px;height:512px">
+    <div class="bubble" role="status">${msg}${t.wrong&&!t.solved?`<div><button class="btn btn-primary small" data-act="recount">${ICON.redo} Újraszámolom</button></div>`:''}</div>
+    ${dinoSVG('bronti',300,232,true)}
+  </div>
+  ${t.solved ? doneSheet(`Igen! ${t.n} tojás: ${t.tens} tízes${t.ones ? ' és '+t.ones+' egyes' : ''}.`) : answerRow('Hány tojás van összesen?', t)}`;
+}
+
 /* addition */
 function berrySVG(c){ const f = c==='a' ? '#E8945A' : '#5E8FB3', hi = c==='a' ? '#F5C29B' : '#9BBCD3'; return `<svg aria-hidden="true" width="46" height="46" viewBox="0 0 56 56"><circle cx="28" cy="31" r="22" fill="${f}"/><circle cx="20" cy="24" r="6" fill="${hi}"/><path d="M28 10 Q34 2 42 6 Q36 12 28 10 Z" fill="#5E8A5E"/></svg>`; }
 function branchHTML(t, c){
@@ -632,6 +725,7 @@ function frameHTML(t, from){
   return `<div class="frame">${cells}</div>`;
 }
 function addBody(t){
+  if(t.big) return addBigBody(t);
   const s = t.a + t.b, n = t.seq.length, two = s > 10;
   const frames = frameHTML(t,0) + (two ? frameHTML(t,10) : ''); t.fresh = false;
   let msg;
@@ -647,6 +741,71 @@ function addBody(t){
     <div class="branches">${branchHTML(t,'a')}${branchHTML(t,'b')}</div>
     <div class="bowl-panel">
       <div class="frames"><span class="frames-lab">Trici tála</span>${frames}</div>
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;justify-content:space-between;align-items:center">
+        <div class="bubble" role="status" style="--tail:110px;font-size:22px;padding:16px 20px">${msg}</div>
+        ${dinoSVG('trici',268,207,true)}
+      </div>
+    </div>
+    ${t.solved ? doneSheet(`${t.a} + ${t.b} = ${s}. Trici jóllakott!`) : answerRow('Hány bogyót eszik meg Trici?', t)}`;
+}
+
+const BERRY = {a:'#E8945A', b:'#5E8FB3'};
+function twigsSVG(bars, w, h, bw, gap, newIdx, center){
+  const r = bw/2, step = (h - 2*r) / 9;
+  const off = center && bars.length ? Math.max(0, (w - (bars.length*bw + (bars.length-1)*gap))/2) : 0;
+  const body = bars.map((bar,i)=>{
+    const x = off + r + i*(bw+gap);
+    const beads = bar.map((c,j)=>`<circle cx="${x.toFixed(1)}" cy="${(r + j*step).toFixed(1)}" r="${r.toFixed(1)}" fill="${BERRY[c]}"/>`).join('');
+    return `<g class="${i===newIdx?'pv-new':''}"><rect x="${(x-1.5).toFixed(1)}" y="${r.toFixed(1)}" width="3" height="${(h-2*r).toFixed(1)}" rx="1.5" fill="#8A6B4E"/>${beads}</g>`;
+  }).join('');
+  return `<svg aria-hidden="true" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${body}</svg>`;
+}
+function onesSVG(colors, cap, w, h, cols, rows, showEmpty, newIdx){
+  const cw = w/cols, chh = h/rows, r = Math.min(cw, chh)/2 - 2;
+  let out = '';
+  for(let i=0;i<cap;i++){
+    const cx = (i%cols)*cw + cw/2, cy = Math.floor(i/cols)*chh + chh/2;
+    if(i < colors.length) out += `<circle class="${i===newIdx?'pv-new':''}" cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r.toFixed(1)}" fill="${BERRY[colors[i]]}"/>`;
+    else if(showEmpty) out += `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${(r-1.5).toFixed(1)}" fill="none" stroke="#D3C6AF" stroke-width="2.5" stroke-dasharray="4 4"/>`;
+  }
+  return `<svg aria-hidden="true" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${out}</svg>`;
+}
+function pileHTML(t, c, kind){
+  const p = c==='a' ? t.pa : t.pb, n = kind==='t' ? p.t : p.o;
+  const word = c==='a' ? 'narancs' : 'kék';
+  const art = kind==='t'
+    ? twigsSVG(Array.from({length:n}, ()=>Array(10).fill(c)), 148, 112, 12, 8, -1, true)
+    : onesSVG(Array(n).fill(c), 10, 50, 112, 2, 5, false, -1);
+  const aria = (kind==='t' ? word+' tízes fürt' : word+' egyes bogyó') + ', még ' + n;
+  return `<button class="pile ${kind==='t'?'tens':'ones'}" data-act="pile" data-c="${c}" data-k="${kind}" aria-label="${aria}" ${n?'':'disabled'}>${art}<span class="pile-lab">${kind==='t'?'tízesek':'egyesek'}</span></button>`;
+}
+function bigBranchHTML(t, c){
+  const n = c==='a' ? t.a : t.b, color = c==='a' ? '#E8945A' : '#A9C9D6', word = c==='a' ? 'narancs' : 'kék';
+  return `<div class="branch"><div class="branch-lab"><span class="branch-num" style="background:${color}">${n}</span><span>${word}</span></div>${pileHTML(t,c,'t')}${pileHTML(t,c,'o')}</div>`;
+}
+function addBigBody(t){
+  const s = t.a + t.b, left = t.pa.t + t.pa.o + t.pb.t + t.pb.o, moved = t.bars.length*10 + t.ones.length;
+  const fresh = t.fresh; t.fresh = null;
+  let msg;
+  if(t.solved) msg = 'Nyamm, jóllaktam! Köszönöm!';
+  else if(t.wrong) msg = 'Számold a fürtöket tízesével, aztán a bogyókat egyesével!';
+  else if(fresh==='bundle') msg = 'Tíz bogyó összeállt egy tízes fürtté!';
+  else if(moved===0) msg = 'Éhes vagyok! Koppints a fürtökre és a bogyókra.';
+  else if(left===0) msg = 'Mind a tálban! Hány bogyó ez összesen?';
+  else msg = 'Nyamm! Még, még!';
+  const barNew = (fresh==='bar' || fresh==='bundle') ? t.bars.length-1 : -1;
+  const oneNew = fresh==='one' ? t.ones.length-1 : -1;
+  return `<div class="equation" role="img" aria-label="${t.a} meg ${t.b} egyenlő kérdőjel">
+      <span class="eq-num" style="background:#E8945A">${t.a}</span><span class="eq-op">+</span><span class="eq-num" style="background:#A9C9D6">${t.b}</span><span class="eq-op">=</span><span class="eq-q">${t.solved ? s : '?'}</span>
+    </div>
+    <div class="branches">${bigBranchHTML(t,'a')}${bigBranchHTML(t,'b')}</div>
+    <div class="bowl-panel">
+      <div class="frames"><span class="frames-lab">Trici tála</span>
+        <div class="mat">
+          <div class="mat-col tens"><span class="mat-lab">tízesek</span>${twigsSVG(t.bars, 176, 140, 14, 6, barNew)}</div>
+          <div class="mat-col ones"><span class="mat-lab">egyesek</span>${onesSVG(t.ones, 10, 60, 140, 2, 5, true, oneNew)}</div>
+        </div>
+      </div>
       <div style="flex:1;min-width:0;display:flex;flex-direction:column;justify-content:space-between;align-items:center">
         <div class="bubble" role="status" style="--tail:110px;font-size:22px;padding:16px 20px">${msg}</div>
         ${dinoSVG('trici',268,207,true)}
@@ -690,7 +849,7 @@ function orderBody(t){
 function gameHTML(){
   const g = S.game, t = g.task;
   const body = t.type==='count' ? countBody(t) : t.type==='add' ? addBody(t) : orderBody(t);
-  return `<section class="screen game">${topBar(t.type, g.idx, g.total, t.solved)}${body}</section>`;
+  return `<section class="screen game">${topBar(t.type, g.idx, g.total, t.solved, t.big)}${body}</section>`;
 }
 
 /* round reward */
@@ -817,11 +976,15 @@ function dexHTML(){
 
 /* parent corner */
 function segHTML(key, opts, cur){ return `<div class="seg" role="group">${opts.map(([v,l])=>`<button data-act="set" data-k="${key}" data-v="${v}" aria-pressed="${cur===v}">${l}</button>`).join('')}</div>`; }
-function swHTML(key, label){ return `<button class="switch" role="switch" data-act="toggle" data-k="${key}" aria-checked="${!!P.settings[key]}" aria-label="${label}"></button>`; }
 function parentHTML(){
   const s = P.settings, st = P.stats;
   const tdy = st.days[today()] || 0;
   const tot = (st.solved.count||0) + (st.solved.add||0) + (st.solved.order||0);
+  let bk = '';
+  if(S.bk==='load' || S.bk==='bad') bk = `<div class="bk-row"><input class="bk-in" id="bk-in" type="text" placeholder="Illeszd be ide a mentőkódot" autocomplete="off" autocapitalize="off" spellcheck="false"><button class="dangerbtn" data-act="bk-apply">Betöltés</button><button class="plainbtn" data-act="bk-cancel">Mégse</button></div>` + (S.bk==='bad' ? `<p class="pnote err">Ez nem Dínóvölgy mentőkód. Másold ki újra a teljes kódot.</p>` : `<p class="pnote">A betöltés felülírja az itteni haladást.</p>`);
+  else if(S.bk==='show') bk = `<input class="bk-in" id="bk-out" type="text" readonly value="${esc(backupCode())}" aria-label="Mentőkód"><p class="pnote">Jelöld ki és másold ki a teljes kódot.</p>`;
+  else if(S.bk==='copied') bk = `<p class="pnote ok">Kimásolva. A másik helyen nyisd meg a szülői sarkot, és illeszd be a Mentőkód betöltése gombbal.</p>`;
+  else if(S.bk==='loaded') bk = `<p class="pnote ok">Betöltve: ${P.hatched.length} dínó, ${P.eggs}/3 tojás.</p>`;
   const reset = S.confirmReset
     ? `<div class="reset-row"><span class="reset-q">Biztosan törlöd? Minden tojás és kikelt dínó elvész, a beállítások megmaradnak.</span><button class="plainbtn" data-act="reset-no">Mégse</button><button class="dangerbtn" data-act="reset-yes">Igen, törlöm</button></div>`
     : `<div class="reset-row"><button class="linkbtn" data-act="reset">Haladás törlése</button></div>`;
@@ -829,13 +992,11 @@ function parentHTML(){
     <div class="ptop"><h1>Szülői sarok</h1><button class="btn btn-primary small" data-act="home">Vissza a játékhoz</button></div>
     <div class="pcard pset">
       <h2>Beállítások</h2>
-      <div class="prow"><label for="kid-name">Gyermek neve</label><input id="kid-name" type="text" maxlength="16" value="${esc(s.kidName||'')}" placeholder="pl. Bence" autocomplete="off"></div>
-      <div class="prow"><span>Számkör</span>${segHTML('level',[[1,'10-ig'],[2,'20-ig']],s.level)}</div>
+      <div class="prow"><label for="kid-name">Gyermek neve</label><input id="kid-name" type="text" maxlength="16" value="${esc(s.kidName||'')}" placeholder="pl. Vilci" autocomplete="off"></div>
+      <div class="prow"><span>Számkör</span>${segHTML('level',[[1,'10-ig'],[2,'20-ig'],[3,'100-ig']],s.level)}</div>
       <div class="prow"><span>Feladat egy körben</span>${segHTML('roundLen',[[3,'3'],[5,'5']],s.roundLen)}</div>
       <div class="prow wrap"><span>Elérhető játékok</span><div class="chips">${['count','add','order'].map(g=>`<button class="chipt" data-act="gtoggle" data-g="${g}" aria-pressed="${!!s.games[g]}">${s.games[g]?ICON.checkSm:''}${GAMES[g].name}</button>`).join('')}</div></div>
-      <div class="prow"><span>Utasítások felolvasása</span>${swHTML('voice','Utasítások felolvasása')}</div>
-      <div class="prow"><span>Hangos számolás</span>${swHTML('countAloud','Hangos számolás')}</div>
-      <div class="prow"><span>Hangeffektek</span>${swHTML('sound','Hangeffektek')}</div>
+      <div class="prow wrap"><span>Mentőkód</span><p class="pnote">Ezzel átviheted a haladást másik iPadre, vagy a Safariból a kezdőképernyős appba.</p><div class="bk-row"><button class="plainbtn" data-act="bk-copy">Mentőkód másolása</button><button class="plainbtn" data-act="bk-load">Mentőkód betöltése</button></div>${bk}</div>
     </div>
     <div class="pcard pstats">
       <h2>Haladás</h2>
@@ -848,7 +1009,7 @@ function parentHTML(){
         <li><span>Összegyűjtött tojás</span><b>${P.totalEggs||0}</b></li>
       </ul>
       <p class="pnote">Minden befejezett kör egy tojást ér, három tojásból kikel egy új dínó. Nincs időkorlát, és a rossz válasz nem jár büntetéssel: a dínó segít újra próbálni.</p>
-      <p class="pnote">A haladás ezen az iPaden van mentve. Ha törlöd az appot a kezdőképernyőről, a haladás is törlődik.</p>
+      <p class="pnote">A haladás minden lépés után mentődik ezen az iPaden, a félbehagyott kör is. Ha törölnéd az appot a kezdőképernyőről, előtte másold ki a mentőkódot, mert a haladás is törlődik.</p>
       ${reset}
     </div>
   </section>`;
@@ -864,10 +1025,11 @@ function render(){
   else if(S.screen==='parent') html = parentHTML();
   else { S.screen = 'home'; html = homeHTML(); }
   stage.innerHTML = html;
+  saveSession();
 }
 function go(screen){
   S.screen = screen;
-  if(screen!=='parent') S.confirmReset = false;
+  if(screen!=='parent'){ S.confirmReset = false; S.bk = null; }
   if(screen!=='dex') S.dexEdit = false;
   render();
 }
@@ -878,7 +1040,6 @@ function startGame(type){
   S.lastGame = type;
   S.game = { type, idx:0, total:P.settings.roundLen, task:newTask(type) };
   go('game');
-  say(GAMES[type].instr);
 }
 function solve(){
   const t = S.game.task;
@@ -887,11 +1048,7 @@ function solve(){
   const d = today(); P.stats.days[d] = (P.stats.days[d]||0) + 1;
   const keys = Object.keys(P.stats.days).sort(); while(keys.length>60) delete P.stats.days[keys.shift()];
   save();
-  sfx.chime();
   render();
-  const praise = pick(['Ügyes!','Szuper!','Pontosan!','Nagyon jó!','Ez az!']);
-  const line = t.type==='count' ? `${t.n} tojás van a fészekben.` : t.type==='add' ? `${t.a} meg ${t.b} egyenlő ${t.a+t.b}.` : 'Bronti hazaért.';
-  say(praise + ' ' + line);
 }
 function nextTask(){
   const g = S.game;
@@ -905,39 +1062,51 @@ function finishRound(){
   save();
   S.game = null;
   go('success');
-  sfx.chime();
-  say(P.pendingHatch ? 'Ügyes vagy! Megvan a harmadik tojás. Valami mozog a fészekben!' : 'Ügyes vagy! Kaptál egy tojást.');
 }
 function answer(v){
   const t = S.game.task; if(t.solved) return;
   const correct = t.type==='count' ? t.n : t.a + t.b;
   if(v===correct) return solve();
   t.wrong = true; t.wig = v;
-  sfx.soft(); render();
-  say(t.type==='count' ? 'Majdnem! Számoljuk meg együtt még egyszer.' : 'Majdnem! Nézd meg a tálat, és számold meg a bogyókat.');
+  render();
 }
 function eggTap(i){
   const t = S.game.task; if(t.solved || t.order.includes(i)) return;
   t.order.push(i); t.pop = i; t.wrong = false;
-  sfx.pop(); sayNumber(t.order.length); render();
+  render();
+}
+function cntTap(key){
+  const t = S.game.task; if(t.solved || t.order.includes(key)) return;
+  t.order.push(key); t.pop = key; t.wrong = false;
+  render();
+}
+function pileTap(c, kind){
+  const t = S.game.task; if(t.solved) return;
+  const p = c==='a' ? t.pa : t.pb;
+  if(kind==='t'){ if(!p.t) return; p.t--; t.bars.push(Array(10).fill(c)); t.fresh = 'bar'; }
+  else {
+    if(!p.o) return;
+    p.o--; t.ones.push(c); t.fresh = 'one';
+    if(t.ones.length===10){ t.bars.push(t.ones); t.ones = []; t.fresh = 'bundle'; }
+  }
+  t.wrong = false;
+  render();
 }
 function berryTap(c,i){
   const t = S.game.task; if(t.solved) return;
   const arr = c==='a' ? t.tA : t.tB; if(arr[i]) return;
   arr[i] = true; t.seq.push(c); t.wrong = false; t.fresh = true;
-  sfx.pop(); sayNumber(t.seq.length); render();
+  render();
 }
 function stoneTap(v){
   const t = S.game.task; if(t.solved || t.k>=t.sorted.length) return;
   if(t.sorted.indexOf(v) < t.k) return;
   if(v===t.sorted[t.k]){
-    t.k++; t.hint = false; t.fresh = true; sfx.pop();
-    if(P.settings.countAloud) say(NUMW[v] || String(v), true);
+    t.k++; t.hint = false; t.fresh = true;
     render();
     if(t.k===t.sorted.length) cross();
   } else {
-    t.hint = true; t.wig = v; sfx.soft(); render();
-    say('Hoppá! Van ennél kisebb kő is.');
+    t.hint = true; t.wig = v; render();
   }
 }
 function cross(){
@@ -958,7 +1127,6 @@ function cross(){
   frames.push({transform:'translate(880px,0px)'});
   const per = 420;
   const anim = walker.animate(frames, {duration: per*(k+1), easing:'ease-in-out', fill:'forwards'});
-  for(let i=0;i<=k;i++) setTimeout(()=>sfx.hop(), per*(i+0.6));
   anim.onfinish = finish;
 }
 
@@ -968,12 +1136,11 @@ function openHatch(){
   if(!d){ P.pendingHatch = false; save(); return go('dex'); }
   S.hatch = { id:d.id, stage:0, opened:false, editing:false };
   go('hatch');
-  say('Koppints a tojásra, hogy kikeljen!');
 }
 function crackTap(){
   const h = S.hatch; if(!h || h.opened || h.stage>=3) return;
   h.stage++;
-  sfx.knock();
+  saveSession();
   const svg = stage.querySelector('.hatch-svg');
   svg.classList.add('st'+h.stage);
   const egg = svg.querySelector('.egg-anim');
@@ -991,8 +1158,7 @@ function openEgg(){
   const svg = stage.querySelector('.hatch-svg');
   if(svg) svg.classList.add('opened');
   const hit = stage.querySelector('.egg-hit'); if(hit) hit.remove();
-  sfx.hatch();
-  say('Megérkezett ' + dinoName(h.id) + '!');
+  saveSession();
   setTimeout(()=>{ if(S.screen==='hatch' && S.hatch===h){ document.getElementById('hatch-text').innerHTML = hatchTextHTML(); } }, 1000);
 }
 function commitName(ctx){
@@ -1003,7 +1169,7 @@ function commitName(ctx){
   save();
   if(ctx==='h'){ S.hatch.editing = false; document.getElementById('hatch-text').innerHTML = hatchTextHTML(); }
   else { S.dexEdit = false; render(); }
-  say('Szia, ' + dinoName(id) + '!');
+  saveSession();
 }
 function startRename(ctx){
   if(ctx==='h'){ S.hatch.editing = true; document.getElementById('hatch-text').innerHTML = hatchTextHTML(); }
@@ -1017,10 +1183,8 @@ let vbTimer = null;
 function vdinoTap(id, btn){
   const art = btn.querySelector('.vd-art');
   art.classList.remove('bounce'); void art.offsetWidth; art.classList.add('bounce');
-  sfx.pop();
   const d = dinoById(id);
   const line = d.line.replace(d.name, dinoName(id));
-  say(line);
   const old = stage.querySelector('.vbubble'); if(old) old.remove();
   const b = document.createElement('div');
   b.className = 'vbubble'; b.setAttribute('role','status'); b.textContent = line;
@@ -1037,11 +1201,12 @@ stage.addEventListener('click', e=>{
   const el = e.target.closest('[data-act]'); if(!el || !stage.contains(el)) return;
   const act = el.dataset.act;
   switch(act){
-    case 'home': try{ window.speechSynthesis && window.speechSynthesis.cancel(); }catch(err){} S.game = null; go('home'); break;
+    case 'home': S.game = null; go('home'); break;
     case 'start': startGame(el.dataset.g); break;
-    case 'speak': if(S.game) say(GAMES[S.game.task.type].instr, true); break;
     case 'egg': eggTap(+el.dataset.i); break;
-    case 'recount': { const t = S.game.task; t.order = []; t.wrong = false; render(); say('Kezdjük az elejéről! Egy…'); break; }
+    case 'cnt': cntTap(el.dataset.k); break;
+    case 'pile': pileTap(el.dataset.c, el.dataset.k); break;
+    case 'recount': { const t = S.game.task; t.order = []; t.wrong = false; render(); break; }
     case 'answer': answer(+el.dataset.v); break;
     case 'berry': berryTap(el.dataset.c, +el.dataset.i); break;
     case 'stone': stoneTap(+el.dataset.v); break;
@@ -1053,17 +1218,35 @@ stage.addEventListener('click', e=>{
     case 'rename-ok': commitName(el.dataset.ctx); break;
     case 'tovalley': { const id = S.hatch && S.hatch.id; S.hatch = null; go('home'); const b = id && stage.querySelector(`.vdino[data-id="${id}"]`); if(b) setTimeout(()=>{ const a=b.querySelector('.vd-art'); a.classList.add('bounce'); }, 250); break; }
     case 'dex': S.dexSel = (S.hatch && S.hatch.opened) ? S.hatch.id : S.dexSel; go('dex'); break;
-    case 'dexsel': { const id = el.dataset.id; S.dexSel = id; S.dexEdit = false; if(P.newIds.includes(id)){ P.newIds = P.newIds.filter(x=>x!==id); save(); } render(); say(dinoName(id) + '. ' + dinoById(id).desc); break; }
+    case 'dexsel': { const id = el.dataset.id; S.dexSel = id; S.dexEdit = false; if(P.newIds.includes(id)){ P.newIds = P.newIds.filter(x=>x!==id); save(); } render(); break; }
     case 'vdino': vdinoTap(el.dataset.id, el); break;
     case 'set': { P.settings[el.dataset.k] = +el.dataset.v; save(); render(); break; }
-    case 'toggle': { const k = el.dataset.k; P.settings[k] = !P.settings[k]; save(); render(); break; }
     case 'gtoggle': { const g = el.dataset.g, games = P.settings.games; const on = Object.keys(games).filter(x=>games[x]); if(games[g] && on.length===1) break; games[g] = !games[g]; save(); render(); break; }
     case 'reset': S.confirmReset = true; render(); break;
     case 'reset-no': S.confirmReset = false; render(); break;
-    case 'reset-yes': { const keep = P.settings; P = defaults(); P.settings = keep; S.confirmReset = false; save(); render(); break; }
+    case 'reset-yes': { const keep = P.settings; P = defaults(); P.settings = keep; S.confirmReset = false; S.bk = null; save(); render(); break; }
+    case 'bk-copy': {
+      const code = backupCode();
+      let pr = null;
+      try{ pr = navigator.clipboard && navigator.clipboard.writeText(code); }catch(err){ pr = null; }
+      const fallback = () => { S.bk = 'show'; render(); const o = document.getElementById('bk-out'); if(o){ o.focus(); try{ o.select(); o.setSelectionRange(0, o.value.length); }catch(err){} } };
+      if(pr && typeof pr.then==='function') pr.then(()=>{ S.bk = 'copied'; render(); }, fallback); else fallback();
+      break;
+    }
+    case 'bk-load': { S.bk = 'load'; render(); const i = document.getElementById('bk-in'); if(i) i.focus(); break; }
+    case 'bk-cancel': S.bk = null; render(); break;
+    case 'bk-apply': applyBackup(); break;
   }
 });
+function applyBackup(){
+  const i = document.getElementById('bk-in');
+  const o = readBackup(i && i.value);
+  if(!o){ S.bk = 'bad'; render(); const n = document.getElementById('bk-in'); if(n) n.focus(); return; }
+  P = o; S.game = null; S.hatch = null; S.bk = 'loaded';
+  save(); render();
+}
 stage.addEventListener('keydown', e=>{
+  if(e.target && e.target.id==='bk-in' && e.key==='Enter'){ e.preventDefault(); applyBackup(); return; }
   if(e.target && e.target.id==='dino-name' && e.key==='Enter'){ e.preventDefault(); const b = stage.querySelector('[data-act="rename-ok"]'); if(b) commitName(b.dataset.ctx); }
 });
 stage.addEventListener('input', e=>{
@@ -1107,11 +1290,13 @@ function fit(){
 }
 window.addEventListener('resize', fit);
 window.addEventListener('orientationchange', ()=>setTimeout(fit, 120));
+window.addEventListener('pagehide', saveSession);
 
 /* ---------- boot ---------- */
 document.addEventListener('gesturestart', e=>e.preventDefault());
 document.addEventListener('touchmove', e=>{ if(!(e.target && e.target.closest && e.target.closest('input'))) e.preventDefault(); }, {passive:false});
 try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(()=>{}); }catch(e){}
+restoreSession();
 fit();
 render();
 if('serviceWorker' in navigator && (location.protocol==='https:' || location.hostname==='localhost' || location.hostname==='127.0.0.1')){
