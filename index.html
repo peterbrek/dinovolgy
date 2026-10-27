@@ -1,0 +1,1123 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#E7DECD">
+<meta name="description" content="Montessori-szerű számolós játék dínókkal: számlálás, összeadás, sorba rendezés.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Dínóvölgy">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="preload" href="baloo2-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="baloo2-latin-ext.woff2" as="font" type="font/woff2" crossorigin>
+<title>Dínóvölgy</title>
+<style>
+@font-face{font-family:'Baloo 2';font-style:normal;font-display:swap;font-weight:400 800;src:url(baloo2-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Baloo 2';font-style:normal;font-display:swap;font-weight:400 800;src:url(baloo2-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Nunito';font-style:normal;font-display:swap;font-weight:200 1000;src:url(nunito-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Nunito';font-style:normal;font-display:swap;font-weight:200 1000;src:url(nunito-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+[hidden]{display:none!important}
+/* Layout: a fixed 1180×820 iPad-landscape stage scaled to fit; an illustrated valley with paper cards and pebble buttons */
+:root{
+  --paper:#F4EDE1;
+  --card:#FBF7EF;
+  --frame:#E7DECD;
+  --ink:#2E3A33;
+  --ink-soft:#4A5650;
+  --leaf:#3F6B4B;
+  --leaf-deep:#2A4B34;
+  --leaf-wash:#E7F0DF;
+  --sun:#F2C76B;
+  --clay:#E8945A;
+  --sand:#E5DCCB;
+  --sand-deep:#C9BCA4;
+  --line:#D9CDB8;
+  --meadow:#E3EDD9;
+  --mist:#A9C9D6;
+  --danger:#A6402B;
+  --display:'Baloo 2','Nunito','Trebuchet MS',system-ui,sans-serif;
+  --body:'Nunito','Baloo 2','Trebuchet MS',system-ui,sans-serif;
+  --lift:0 4px 0 rgba(46,58,51,.14);
+}
+html{height:100%;box-sizing:border-box;color-scheme:light;overscroll-behavior:none;-webkit-text-size-adjust:100%}
+body{height:100%;box-sizing:border-box;margin:0;background:var(--frame);color:var(--ink);font-family:var(--display);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0;
+  overflow:hidden;overscroll-behavior:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+#app{height:100%;box-sizing:border-box;padding-top:max(10px,env(safe-area-inset-top,0px));padding-bottom:max(10px,env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+#fit{position:relative;flex:none}
+#stage{position:absolute;left:0;top:0;width:1180px;height:820px;transform-origin:0 0;overflow:hidden;border-radius:28px;background:var(--paper);line-height:1.25}
+#rotate-hint{margin:0;font-size:18px;font-weight:600;color:var(--ink-soft);display:flex;align-items:center;gap:8px}
+button{font:inherit;color:inherit;border:none;background:none;padding:0;margin:0;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:4px solid var(--sun);outline-offset:3px}
+input{-webkit-user-select:text;user-select:text}
+.screen{position:absolute;inset:0;overflow:hidden}
+h1,h2,p{margin:0}
+h1,h2{text-wrap:balance}
+
+/* shared pieces */
+.round-btn{width:72px;height:72px;flex:none;border-radius:999px;background:var(--card);display:flex;align-items:center;justify-content:center;box-shadow:var(--lift)}
+.round-btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(46,58,51,.14)}
+.abs-tl{position:absolute;top:28px;left:40px;z-index:5}
+.topbar{position:absolute;top:28px;left:40px;right:40px;height:72px;display:flex;align-items:center;justify-content:space-between;gap:20px;z-index:4}
+.instr{display:flex;align-items:center;gap:14px;padding:10px 28px 10px 10px;background:var(--card);border-radius:999px;box-shadow:var(--lift);font-size:24px;font-weight:600;line-height:1.2;min-width:0}
+.speak{width:52px;height:52px;flex:none;border-radius:999px;background:var(--sun);display:flex;align-items:center;justify-content:center}
+.speak:active{transform:scale(.94)}
+.dots{display:flex;align-items:center;gap:8px;flex:none}
+.dot{width:14px;height:14px;border-radius:999px;background:var(--line);display:inline-block}
+.dot.on{background:var(--leaf)}
+.dots b{margin-left:6px;font-size:20px;font-weight:600;font-variant-numeric:tabular-nums}
+.bubble{position:relative;width:100%;box-sizing:border-box;background:var(--card);border-radius:28px;padding:20px 24px;font-size:24px;font-weight:600;line-height:1.3;box-shadow:var(--lift)}
+.bubble::after{content:"";position:absolute;left:var(--tail,140px);bottom:-11px;width:22px;height:22px;background:var(--card);transform:rotate(45deg)}
+.bubble .btn{margin-top:14px}
+.answer-row,.done-sheet{position:absolute;left:40px;right:40px;bottom:32px;height:128px;box-sizing:border-box;border-radius:36px;display:flex;align-items:center;gap:24px}
+.answer-row{padding:0 28px 0 36px;background:var(--card);box-shadow:0 6px 0 rgba(46,58,51,.12)}
+.answer-row .q{flex:1;font-size:30px;font-weight:700}
+.done-sheet{padding:0 24px 0 24px;background:var(--leaf-wash);box-shadow:0 6px 0 rgba(63,107,75,.28);animation:sheetIn .4s cubic-bezier(.3,1.4,.5,1);z-index:6}
+.done-sheet .msg{flex:1;font-size:30px;font-weight:700;line-height:1.2}
+.check{width:76px;height:76px;flex:none;border-radius:999px;background:var(--leaf);display:flex;align-items:center;justify-content:center}
+@keyframes sheetIn{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+.stone{width:128px;height:96px;flex:none;background:var(--sand);box-shadow:0 6px 0 var(--sand-deep);font-size:54px;font-weight:700;display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}
+.stone:active{transform:translateY(4px);box-shadow:0 2px 0 var(--sand-deep)}
+.r1{border-radius:48% 52% 46% 54%/55% 50% 50% 45%}
+.r2{border-radius:52% 48% 54% 46%/50% 55% 45% 50%}
+.r3{border-radius:46% 54% 50% 50%/52% 48% 52% 48%}
+.wiggle{animation:wiggle .5s}
+@keyframes wiggle{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px) rotate(-3deg)}40%{transform:translateX(9px) rotate(3deg)}60%{transform:translateX(-6px)}80%{transform:translateX(4px)}}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;border-radius:999px;font-weight:700;white-space:nowrap}
+.btn-primary{background:var(--leaf);color:#FFFFFF;padding:18px 34px;font-size:26px;box-shadow:0 6px 0 var(--leaf-deep)}
+.btn-primary:active{transform:translateY(4px);box-shadow:0 2px 0 var(--leaf-deep)}
+.btn-soft{background:var(--card);color:var(--ink);padding:18px 30px;font-size:24px;box-shadow:0 6px 0 rgba(46,58,51,.15)}
+.btn-soft:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(46,58,51,.15)}
+.btn.small{padding:12px 22px;font-size:22px}
+
+/* home */
+.scene{position:absolute;left:0;top:0}
+.cloud{animation:drift 38s ease-in-out infinite alternate}
+.cloud.slow{animation-duration:52s}
+@keyframes drift{from{transform:translateX(-30px)}to{transform:translateX(40px)}}
+.home-head{position:absolute;top:34px;left:48px;right:48px;display:flex;justify-content:space-between;align-items:flex-start;gap:24px;z-index:3}
+.home-head h1{font-size:48px;font-weight:700;line-height:1.1}
+.home-head p{font-size:24px;margin-top:6px}
+.head-actions{display:flex;align-items:center;gap:14px}
+.pill{display:flex;align-items:center;gap:12px;padding:10px 14px 10px 12px;background:var(--card);border-radius:999px;font-size:24px;font-weight:700;box-shadow:var(--lift)}
+.pill:active{transform:translateY(3px)}
+.pill-count{padding:3px 12px;border-radius:999px;background:var(--sun);font-size:19px;font-variant-numeric:tabular-nums}
+.pill-hatch{background:var(--sun);animation:nudge 2.4s ease-in-out infinite;padding-right:22px}
+@keyframes nudge{0%,80%,100%{transform:rotate(0)}85%{transform:rotate(-3deg)}90%{transform:rotate(3deg)}95%{transform:rotate(-2deg)}}
+.lockwrap{position:relative}
+.lockbtn{position:relative;width:56px;height:56px;border-radius:999px;background:#EEF3EE;display:flex;align-items:center;justify-content:center}
+.lockbtn .ring{position:absolute;inset:-4px;width:64px;height:64px;transform:rotate(-90deg);pointer-events:none}
+.lockbtn .ring circle{fill:none;stroke:var(--leaf);stroke-width:4;stroke-dasharray:183;stroke-dashoffset:183}
+.lockbtn.holding .ring circle{animation:ringfill 2s linear forwards}
+@keyframes ringfill{to{stroke-dashoffset:0}}
+.holdtip{position:absolute;right:0;top:66px;white-space:nowrap;background:var(--ink);color:#FFFFFF;font-size:18px;font-weight:600;padding:8px 14px;border-radius:14px}
+.cards{position:absolute;left:48px;right:48px;bottom:40px;display:grid;gap:28px;z-index:3}
+.card{display:flex;flex-direction:column;height:364px;box-sizing:border-box;padding:14px;background:var(--card);border-radius:36px;box-shadow:0 8px 0 rgba(46,58,51,.18);text-align:left;min-width:0}
+.card:active{transform:translateY(5px);box-shadow:0 3px 0 rgba(46,58,51,.18)}
+.card-art{height:186px;border-radius:26px;overflow:hidden;flex:none}
+.card-art svg{display:block;width:100%;height:100%}
+.card-body{display:flex;flex-direction:column;gap:4px;padding:16px 10px 2px;flex:1}
+.card-title{font-size:32px;font-weight:700;line-height:1.15}
+.card-sub{font-size:21px;line-height:1.3}
+.card-foot{display:flex;justify-content:space-between;align-items:center;margin-top:auto}
+.chip{padding:6px 14px;border-radius:999px;font-size:18px;font-weight:600}
+.play{width:52px;height:52px;border-radius:999px;background:var(--leaf);display:flex;align-items:center;justify-content:center}
+.vdino{position:absolute;z-index:2;transform-origin:50% 100%}
+.vdino svg{display:block}
+.vd-art{display:block;transform-origin:50% 100%}
+.vd-art.bounce{animation:bounce .6s cubic-bezier(.3,1.5,.5,1)}
+@keyframes bounce{0%{transform:translateY(0) scale(1)}30%{transform:translateY(-26px) scale(1.04,.96)}60%{transform:translateY(0) scale(1.06,.94)}100%{transform:none}}
+.vdino.fly{animation:float 4.5s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+.newbadge{position:absolute;left:50%;top:-30px;transform:translateX(-50%);background:var(--clay);color:var(--ink);font-size:17px;font-weight:700;padding:3px 12px;border-radius:999px;white-space:nowrap}
+.vbubble{position:absolute;z-index:7;width:280px;box-sizing:border-box;background:var(--card);border-radius:22px;padding:14px 18px;font-size:21px;font-weight:600;line-height:1.25;box-shadow:var(--lift);animation:sheetIn .3s ease-out;pointer-events:none}
+
+/* counting */
+.nest-panel{position:absolute;left:40px;top:124px;width:760px;height:512px;border-radius:40px;background:var(--meadow);overflow:hidden}
+.nest-panel>svg{position:absolute;left:0;top:0}
+.egg{position:absolute}
+.egg svg{display:block;transition:transform .12s}
+.egg:active svg{transform:scale(.94)}
+.egg .badge{position:absolute;border-radius:999px;background:var(--leaf);color:#FFFFFF;font-weight:700;display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}
+.egg.pop .badge{animation:pop .35s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{from{transform:scale(.2)}to{transform:scale(1)}}
+.side-col{position:absolute;top:124px;display:flex;flex-direction:column;justify-content:space-between;align-items:center}
+
+/* addition */
+.equation{position:absolute;top:116px;left:0;right:0;display:flex;justify-content:center;align-items:center;gap:18px}
+.eq-num{width:92px;height:80px;border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:58px;font-weight:700}
+.eq-op{font-size:56px;font-weight:700}
+.eq-q{width:92px;height:80px;box-sizing:border-box;border-radius:24px;border:4px dashed var(--ink);display:flex;align-items:center;justify-content:center;font-size:52px;font-weight:700}
+.branches{position:absolute;left:40px;top:216px;width:372px;display:flex;flex-direction:column;gap:20px}
+.branch{height:190px;box-sizing:border-box;padding:20px;background:var(--card);border-radius:32px;display:flex;align-items:center;gap:14px}
+.branch-lab{display:flex;flex-direction:column;align-items:center;gap:4px;flex:none}
+.branch-num{width:60px;height:60px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:40px;font-weight:700}
+.branch-lab span:last-child{font-size:17px;font-weight:600}
+.berries{display:grid;grid-template-columns:repeat(5,46px);gap:8px 6px}
+.berry,.berry-gone{width:46px;height:46px;display:flex;align-items:center;justify-content:center}
+.berry:active{transform:scale(.9)}
+.berry-gone span{width:38px;height:38px;box-sizing:border-box;border-radius:999px;border:3px dashed #D3C6AF}
+.bowl-panel{position:absolute;left:440px;top:216px;width:700px;height:400px;box-sizing:border-box;padding:24px;background:var(--meadow);border-radius:40px;display:flex;gap:24px}
+.frames{width:352px;flex:none;display:flex;flex-direction:column;gap:12px;justify-content:center}
+.frames-lab{font-size:22px;font-weight:700}
+.frame{box-sizing:border-box;padding:10px;background:#B98552;border-radius:22px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.cell{height:56px;border-radius:16px;background:var(--paper);display:flex;align-items:center;justify-content:center}
+.cell span{width:40px;height:40px;border-radius:999px}
+.cell span.new{animation:pop .3s cubic-bezier(.3,1.6,.5,1)}
+
+/* ordering */
+.river-panel{position:absolute;left:40px;top:124px;width:1100px;height:420px;border-radius:40px;background:#A9C79E;overflow:hidden}
+.river-panel>svg{position:absolute;left:0;top:0}
+.slot{position:absolute;top:168px;width:104px;height:84px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-size:46px;font-weight:700}
+.slot.empty{border:4px dashed var(--card);background:rgba(251,247,239,.25)}
+.slot.full{background:var(--sand);box-shadow:0 6px 0 #B8AC95}
+.slot.full.new{animation:pop .3s cubic-bezier(.3,1.6,.5,1)}
+.walker{position:absolute;left:14px;top:232px;width:202px;height:156px;z-index:2}
+.walker svg{display:block}
+.river-bubble{position:absolute;left:24px;top:24px;width:380px;z-index:3}
+.river-bubble .bubble{font-size:23px;padding:18px 22px}
+.tray{position:absolute;left:40px;right:40px;bottom:32px;height:200px;box-sizing:border-box;padding:20px 36px 28px;background:var(--card);border-radius:36px;display:flex;flex-direction:column;gap:16px;box-shadow:0 6px 0 rgba(46,58,51,.12)}
+.tray-lab{font-size:24px;font-weight:700}
+.tray-row{display:flex;justify-content:center;gap:32px}
+.tray .stone{width:140px;height:104px;font-size:56px}
+.stone-gone{width:140px;height:104px;box-sizing:border-box;border:3px dashed #D3C6AF;flex:none}
+
+/* success */
+.success{background:#F7EBCB}
+.done-chip{position:absolute;top:40px;left:0;right:0;display:flex;justify-content:center}
+.done-chip span{display:flex;align-items:center;gap:10px;padding:10px 20px;border-radius:999px;background:var(--card);font-size:21px;font-weight:600}
+.success-art{position:absolute;top:96px;left:0;right:0;display:flex;justify-content:center}
+.success-text{position:absolute;top:426px;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;padding:0 80px}
+.success-text h1{font-size:66px;font-weight:700;line-height:1.1}
+.success-text p{font-size:28px;max-width:860px}
+.meter{display:flex;align-items:center;gap:10px;margin-top:10px}
+.meter-lab{margin-left:6px;padding:4px 14px;border-radius:999px;background:var(--sun);font-size:20px;font-weight:700}
+.success-actions{position:absolute;bottom:64px;left:0;right:0;display:flex;justify-content:center;align-items:center;gap:20px}
+.new-egg{transform-box:fill-box;transform-origin:50% 90%;animation:wobble 1.6s ease-in-out infinite}
+@keyframes wobble{0%,60%,100%{transform:rotate(0)}68%{transform:rotate(-7deg)}76%{transform:rotate(6deg)}84%{transform:rotate(-4deg)}92%{transform:rotate(2deg)}}
+
+/* hatching */
+.hatch{background:#F7EBCB}
+.hatch-wrap{position:absolute;left:270px;top:16px;width:640px;height:440px}
+.hatch-wrap>svg{display:block}
+.egg-hit{position:absolute;left:227px;top:111px;width:186px;height:243px;border-radius:50% 50% 46% 46%/58% 58% 42% 42%}
+.egg-anim{transform-box:fill-box;transform-origin:50% 92%}
+.egg-anim.knock{animation:knock .45s ease-in-out}
+@keyframes knock{0%,100%{transform:rotate(0)}25%{transform:rotate(-8deg)}50%{transform:rotate(7deg)}75%{transform:rotate(-4deg)}}
+.crack{opacity:0;transition:opacity .15s}
+.st1 .c1,.st2 .c2,.st3 .c3{opacity:1}
+.shell{opacity:0;transform-box:fill-box;transform-origin:50% 50%}
+.opened .egg-whole{opacity:0}
+.opened .shell{opacity:1}
+.opened .shell-top{animation:shellTop .9s .05s ease-out forwards}
+@keyframes shellTop{to{transform:translate(-90px,-120px) rotate(-60deg);opacity:0}}
+.opened .shell-bot{animation:shellBot .6s .8s ease-in forwards}
+@keyframes shellBot{to{transform:translateY(34px) scale(.9);opacity:0}}
+.dino-pop{opacity:0;transform:translateY(30px) scale(.35);transform-box:fill-box;transform-origin:50% 100%}
+.opened .dino-pop{animation:popin .9s .2s cubic-bezier(.3,1.5,.5,1) forwards}
+@keyframes popin{to{opacity:1;transform:translateY(0) scale(1)}}
+.spark{opacity:0;transform-box:fill-box;transform-origin:50% 50%}
+.opened .spark{animation:spark 1.2s ease-out forwards}
+@keyframes spark{0%{opacity:0;transform:scale(.2) rotate(0)}40%{opacity:1;transform:scale(1.25) rotate(45deg)}100%{opacity:.85;transform:scale(.8) rotate(90deg)}}
+.done .shell{display:none}
+.done .dino-pop{animation:none;opacity:1;transform:none}
+.done .spark{animation:none;opacity:.85}
+.hatch-text{position:absolute;left:120px;right:120px;top:470px;bottom:24px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:14px;text-align:center}
+.hatch-hint{font-size:34px;font-weight:700;margin-top:24px}
+.tapdots{display:flex;gap:12px}
+.tapdots .dot{width:18px;height:18px}
+.hatch-card{display:flex;flex-direction:column;align-items:center;gap:8px;animation:sheetIn .5s ease-out}
+.hatch-card .new-chip{padding:6px 16px;border-radius:999px;background:var(--clay);font-size:20px;font-weight:700}
+.name-row{display:flex;align-items:center;gap:12px;justify-content:center}
+.dname{font-size:56px;font-weight:700;line-height:1.05}
+.pencil{width:52px;height:52px;border-radius:999px;background:var(--card);display:flex;align-items:center;justify-content:center;box-shadow:var(--lift);flex:none}
+#dino-name{font-family:var(--display);font-size:36px;font-weight:700;color:var(--ink);background:#FFFFFF;border:3px solid var(--line);border-radius:18px;padding:6px 16px;width:300px;box-sizing:border-box}
+.kind{font-size:20px;font-weight:600;color:var(--ink-soft);letter-spacing:.02em}
+.desc{font-size:24px;line-height:1.35;max-width:720px}
+.hatch-actions{display:flex;gap:18px;margin-top:10px}
+
+/* dino collection */
+.dex-top{position:absolute;top:28px;left:40px;right:40px;height:72px;display:flex;align-items:center;gap:20px}
+.dex-top h1{flex:1;font-size:46px;font-weight:700}
+.next-egg{display:flex;align-items:center;gap:10px;padding:10px 20px;background:var(--card);border-radius:999px;font-size:21px;font-weight:600}
+.dex-left{position:absolute;left:40px;top:124px;width:400px;height:664px;box-sizing:border-box;padding:28px;background:#F6E3C4;border-radius:40px;display:flex;flex-direction:column;gap:10px}
+.dex-left .name-row{justify-content:flex-start}
+.dex-left .dname{font-size:48px}
+.dex-left #dino-name{width:230px;font-size:30px}
+.dex-left .desc{font-size:21px}
+.dex-left .kind{font-size:18px}
+.dex-chip{align-self:flex-start;padding:6px 16px;border-radius:999px;background:var(--clay);font-size:19px;font-weight:700}
+.dex-chip.calm{background:var(--card)}
+.dex-art{display:flex;justify-content:center;background:#F0D4A8;border-radius:28px;padding:12px 0}
+.dex-left .btn{margin-top:auto}
+.dex-right{position:absolute;left:468px;top:124px;width:672px;height:664px;box-sizing:border-box;padding:28px;background:var(--card);border-radius:40px;display:flex;flex-direction:column;gap:20px}
+.dex-right-head{display:flex;align-items:center;justify-content:space-between}
+.dex-right-head h2{font-size:30px;font-weight:700}
+.dex-count{padding:4px 14px;border-radius:999px;background:var(--meadow);font-size:20px;font-weight:700}
+.dex-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:16px;flex:1}
+.dcard{position:relative;box-sizing:border-box;padding:14px 8px;background:var(--paper);border-radius:26px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;min-width:0}
+.dcard.sel{box-shadow:inset 0 0 0 4px var(--leaf)}
+.dcard:active{transform:scale(.97)}
+.dcard .dn{font-size:25px;font-weight:700}
+.dcard .dk{font-size:16px;color:var(--ink-soft)}
+.dcard .newtag{position:absolute;top:10px;right:10px;padding:2px 10px;border-radius:999px;background:var(--clay);font-size:16px;font-weight:700}
+.dcard.locked{background:#EEE6D6;gap:10px}
+.dcard.locked span{font-size:18px;font-weight:600;color:#5C5040}
+
+/* parent corner */
+.parent{background:var(--paper);font-family:var(--body)}
+.ptop{position:absolute;top:28px;left:40px;right:40px;height:72px;display:flex;align-items:center;justify-content:space-between}
+.ptop h1{font-family:var(--display);font-size:44px;font-weight:700}
+.ptop .btn{font-family:var(--display)}
+.pcard{position:absolute;top:124px;height:664px;box-sizing:border-box;padding:24px 28px;background:var(--card);border-radius:32px;display:flex;flex-direction:column}
+.pcard h2{font-family:var(--display);font-size:28px;font-weight:700;margin-bottom:6px}
+.pset{left:40px;width:572px}
+.pstats{left:636px;width:504px;gap:14px}
+.prow{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:68px;border-bottom:1px solid #EDE5D6;font-size:19px;font-weight:700}
+.prow:last-child{border-bottom:none}
+.prow.wrap{flex-direction:column;align-items:flex-start;justify-content:center;gap:10px;padding:12px 0}
+#kid-name{font-family:var(--body);font-size:19px;font-weight:600;color:var(--ink);padding:10px 14px;border-radius:14px;border:2px solid var(--line);background:#FFFFFF;width:230px;box-sizing:border-box}
+.seg{display:flex;background:#EDE5D6;border-radius:999px;padding:4px;gap:2px}
+.seg button{padding:10px 20px;border-radius:999px;font-family:var(--body);font-size:18px;font-weight:700;color:var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--leaf);color:#FFFFFF}
+.chips{display:flex;gap:10px;flex-wrap:wrap}
+.chipt{padding:9px 16px;border-radius:999px;border:2px solid var(--line);font-family:var(--body);font-size:17px;font-weight:700;display:flex;align-items:center;gap:6px}
+.chipt[aria-pressed="true"]{border-color:var(--leaf);background:var(--leaf-wash)}
+.chipt[aria-pressed="false"]{color:var(--ink-soft)}
+.switch{position:relative;width:64px;height:36px;flex:none;border-radius:999px;background:var(--line)}
+.switch::after{content:"";position:absolute;left:4px;top:4px;width:28px;height:28px;border-radius:999px;background:#FFFFFF;transition:left .15s}
+.switch[aria-checked="true"]{background:var(--leaf)}
+.switch[aria-checked="true"]::after{left:32px}
+.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.tile{background:var(--paper);border-radius:20px;padding:14px 16px;display:flex;flex-direction:column;gap:2px}
+.tile b{font-family:var(--display);font-size:38px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}
+.tile span{font-size:16px;font-weight:700;color:var(--ink-soft)}
+.plist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.plist li{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #EDE5D6;font-size:18px;font-weight:600}
+.plist li b{font-variant-numeric:tabular-nums}
+.pnote{font-size:16px;line-height:1.45;color:var(--ink-soft);font-weight:600}
+.reset-row{margin-top:auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.linkbtn{font-family:var(--body);font-size:17px;font-weight:800;color:var(--danger);padding:8px 0;text-decoration:underline;text-underline-offset:3px}
+.reset-q{font-size:17px;font-weight:700;flex-basis:100%}
+.dangerbtn{background:var(--danger);color:#FFFFFF;padding:10px 18px;border-radius:999px;font-family:var(--body);font-size:17px;font-weight:800}
+.plainbtn{background:#EDE5D6;padding:10px 18px;border-radius:999px;font-family:var(--body);font-size:17px;font-weight:800}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="fit"><div id="stage"></div></div>
+  <p id="rotate-hint" hidden><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M8 3l-2 2 2 2"/></svg>Fordítsd el a készüléket, fekve nagyobb a völgy.</p>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* ---------- art ---------- */
+const EGG = "M0 -30 C14 -30 23 -4 23 8 C23 22 13 30 0 30 C-13 30 -23 22 -23 8 C-23 -4 -14 -30 0 -30 Z";
+const BIGEGG = "M0 -90 C34 -90 62 -50 62 4 C62 50 34 72 0 72 C-34 72 -62 50 -62 4 C-62 -50 -34 -90 0 -90 Z";
+const TOPSHELL = "M-62 4 C-62 -50 -34 -90 0 -90 C34 -90 62 -50 62 4 L46 -10 L31 4 L15 -10 L0 4 L-15 -10 L-31 4 L-46 -10 Z";
+const BOTSHELL = "M-62 4 L-46 -10 L-31 4 L-15 -10 L0 4 L15 -10 L31 4 L46 -10 L62 4 C62 50 34 72 0 72 C-34 72 -62 50 -62 4 Z";
+const STAR = "M0 -14 L4 -4 L14 0 L4 4 L0 14 L-4 4 L-14 0 L-4 -4 Z";
+const SPOTS = [[[-8,-10,3.5],[9,4,4.5],[-6,18,3]],[[6,-12,4],[-9,6,3.5],[8,16,3]],[[-6,-12,4],[10,0,3.5],[-4,14,4.5]]];
+const NUMW = ['nulla','egy','kettő','három','négy','öt','hat','hét','nyolc','kilenc','tíz','tizenegy','tizenkettő','tizenhárom','tizennégy','tizenöt','tizenhat','tizenhét','tizennyolc','tizenkilenc','húsz'];
+
+const ICON = {
+  home:'<svg aria-hidden="true" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#2E3A33" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>',
+  speaker:'<svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2E3A33" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>',
+  lock:'<svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2E3A33" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
+  play:'<svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24"><path d="M9 6l9 6-9 6z" fill="#FBF7EF"/></svg>',
+  arrow:'<svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>',
+  check:'<svg aria-hidden="true" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>',
+  checkSm:'<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3F6B4B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>',
+  redo:'<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>',
+  pencil:'<svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2E3A33" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L20 8l-4-4L4 16v4z"/><path d="M14 6l4 4"/></svg>'
+};
+
+const ART = {
+bronti:`<path d="M48 112 Q14 122 4 100 Q26 108 52 96 Z" fill="#7FA57A"/><rect x="62" y="118" width="18" height="40" rx="8" fill="#6E9469"/><rect x="122" y="118" width="18" height="40" rx="8" fill="#6E9469"/><path d="M128 100 Q138 50 152 30 L172 36 Q158 62 150 104 Z" fill="#8FB08A"/><ellipse cx="100" cy="106" rx="58" ry="36" fill="#8FB08A"/><rect x="80" y="122" width="18" height="38" rx="8" fill="#8FB08A"/><rect x="138" y="120" width="18" height="38" rx="8" fill="#8FB08A"/><ellipse cx="166" cy="30" rx="22" ry="14" fill="#8FB08A"/><circle cx="172" cy="25" r="3.5" fill="#2E3A33"/><path d="M176 35 Q181 37 185 33" stroke="#2E3A33" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="161" cy="34" r="4" fill="#E9B8A8"/><circle cx="86" cy="96" r="7" fill="#A8C6A2"/><circle cx="108" cy="88" r="5" fill="#A8C6A2"/><circle cx="120" cy="104" r="6" fill="#A8C6A2"/>`,
+trici:`<g transform="translate(0 20)"><path d="M40 90 Q8 98 2 80 Q22 86 44 76 Z" fill="#D9824A"/><rect x="54" y="98" width="20" height="36" rx="8" fill="#C97540"/><rect x="112" y="98" width="20" height="36" rx="8" fill="#C97540"/><ellipse cx="96" cy="86" rx="62" ry="36" fill="#E8945A"/><rect x="72" y="102" width="20" height="36" rx="8" fill="#E8945A"/><rect x="128" y="100" width="20" height="36" rx="8" fill="#E8945A"/><circle cx="160" cy="64" r="34" fill="#F2C76B"/><g fill="#F6D58A"><circle cx="146" cy="40" r="5"/><circle cx="168" cy="34" r="5"/><circle cx="186" cy="46" r="5"/></g><ellipse cx="172" cy="80" rx="28" ry="22" fill="#E8945A"/><path d="M164 62 L158 36 L172 60 Z" fill="#FBF4E6"/><path d="M180 62 L190 36 L190 66 Z" fill="#FBF4E6"/><path d="M196 76 L212 68 L198 88 Z" fill="#FBF4E6"/><circle cx="180" cy="74" r="4" fill="#2E3A33"/><path d="M186 90 Q192 93 197 88" stroke="#2E3A33" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="170" cy="88" r="4.5" fill="#F0A98C"/><circle cx="80" cy="76" r="7" fill="#F0AE7E"/><circle cx="104" cy="70" r="5" fill="#F0AE7E"/></g>`,
+potyi:`<g transform="translate(10 20)"><path d="M44 96 Q16 102 6 86 Q26 92 48 86 Z" fill="#6F9DB4"/><path d="M14 88 L10 74 L22 86 Z" fill="#E8945A"/><rect x="62" y="104" width="18" height="30" rx="8" fill="#6F9DB4"/><rect x="112" y="104" width="18" height="30" rx="8" fill="#6F9DB4"/><g fill="#E8945A"><path d="M58 76 L66 46 L80 70 Z"/><path d="M78 68 L90 34 L104 64 Z"/><path d="M100 64 L112 36 L124 66 Z"/><path d="M120 70 L132 48 L140 76 Z"/></g><ellipse cx="98" cy="94" rx="54" ry="30" fill="#8FB8CB"/><rect x="78" y="106" width="18" height="30" rx="8" fill="#8FB8CB"/><rect x="126" y="104" width="18" height="30" rx="8" fill="#8FB8CB"/><ellipse cx="156" cy="98" rx="24" ry="17" fill="#8FB8CB"/><circle cx="162" cy="93" r="3.5" fill="#2E3A33"/><path d="M166 104 Q171 107 175 103" stroke="#2E3A33" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="154" cy="104" r="4" fill="#F0A98C"/><circle cx="90" cy="94" r="6" fill="#B5D2DE"/><circle cx="112" cy="86" r="4" fill="#B5D2DE"/></g>`,
+rexi:`<path d="M78 112 Q30 124 6 100 Q40 106 82 96 Z" fill="#9E719A"/><rect x="88" y="112" width="22" height="46" rx="10" fill="#9E719A"/><ellipse cx="112" cy="100" rx="42" ry="34" fill="#B98BB3" transform="rotate(-20 112 100)"/><ellipse cx="124" cy="106" rx="18" ry="22" fill="#D9B7D3" transform="rotate(-20 124 106)"/><rect x="114" y="114" width="22" height="44" rx="10" fill="#B98BB3"/><ellipse cx="132" cy="70" rx="20" ry="22" fill="#B98BB3"/><path d="M118 46 Q126 22 158 22 Q196 24 198 48 Q198 66 176 68 L142 70 Q120 68 118 54 Z" fill="#B98BB3"/><path d="M160 58 Q176 62 192 54" stroke="#2E3A33" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M167 59 L170 64 L173 60 Z" fill="#FBF4E6"/><path d="M178 59 L181 63 L184 58 Z" fill="#FBF4E6"/><circle cx="160" cy="40" r="5" fill="#2E3A33"/><circle cx="161.5" cy="38.5" r="1.6" fill="#FBF4E6"/><circle cx="190" cy="38" r="2" fill="#2E3A33"/><circle cx="148" cy="54" r="5" fill="#F0A98C"/><path d="M138 92 Q152 94 156 104" stroke="#9E719A" stroke-width="7" fill="none" stroke-linecap="round"/><circle cx="96" cy="86" r="5" fill="#CDA8C8"/><circle cx="104" cy="74" r="4" fill="#CDA8C8"/>`,
+szarnyi:`<path d="M100 84 Q54 40 6 66 Q38 76 58 96 Q80 104 102 100 Z" fill="#EBC97C"/><path d="M120 84 Q166 40 214 66 Q182 76 162 96 Q140 104 118 100 Z" fill="#EBC97C"/><path d="M100 84 Q60 56 20 66" stroke="#C79A3F" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M120 84 Q160 56 200 66" stroke="#C79A3F" stroke-width="3" fill="none" stroke-linecap="round"/><rect x="98" y="122" width="10" height="36" rx="5" fill="#C79A3F"/><rect x="112" y="122" width="10" height="36" rx="5" fill="#C79A3F"/><ellipse cx="110" cy="106" rx="24" ry="28" fill="#E0B458"/><ellipse cx="110" cy="112" rx="14" ry="17" fill="#F0D597"/><ellipse cx="110" cy="76" rx="12" ry="14" fill="#E0B458"/><path d="M102 52 L64 28 L110 44 Z" fill="#C79A3F"/><path d="M96 54 Q108 38 128 48 L178 62 Q132 68 118 72 Q98 72 96 54 Z" fill="#E0B458"/><path d="M130 62 L172 62" stroke="#C79A3F" stroke-width="2" stroke-linecap="round"/><circle cx="114" cy="54" r="4" fill="#2E3A33"/><circle cx="115.3" cy="52.7" r="1.3" fill="#FBF4E6"/><circle cx="108" cy="64" r="4" fill="#F0A98C"/>`,
+anki:`<path d="M50 118 Q28 124 18 114" stroke="#8C765B" stroke-width="12" fill="none" stroke-linecap="round"/><ellipse cx="14" cy="112" rx="14" ry="11" fill="#8C765B"/><rect x="56" y="120" width="20" height="36" rx="8" fill="#8C765B"/><rect x="124" y="120" width="20" height="36" rx="8" fill="#8C765B"/><path d="M42 126 Q44 72 108 70 Q170 72 172 126 Z" fill="#A68F72"/><rect x="74" y="122" width="20" height="36" rx="8" fill="#A68F72"/><rect x="142" y="122" width="20" height="36" rx="8" fill="#A68F72"/><g fill="#C2AE8E"><circle cx="64" cy="102" r="7"/><circle cx="84" cy="88" r="7"/><circle cx="108" cy="82" r="7"/><circle cx="132" cy="86" r="7"/><circle cx="154" cy="100" r="7"/><circle cx="78" cy="112" r="6"/><circle cx="102" cy="102" r="6"/><circle cx="126" cy="104" r="6"/><circle cx="148" cy="116" r="6"/></g><g fill="#EDE3D0"><path d="M46 112 L34 104 L48 102 Z"/><path d="M170 112 L182 104 L168 102 Z"/><path d="M60 84 L52 74 L66 78 Z"/></g><ellipse cx="184" cy="114" rx="22" ry="16" fill="#A68F72"/><circle cx="190" cy="108" r="3.5" fill="#2E3A33"/><path d="M193 120 Q198 123 203 118" stroke="#2E3A33" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="182" cy="120" r="4" fill="#F0A98C"/>`,
+buksi:`<path d="M80 108 Q30 114 8 92 Q40 100 84 94 Z" fill="#C9867C"/><rect x="92" y="112" width="20" height="46" rx="9" fill="#C9867C"/><ellipse cx="112" cy="98" rx="40" ry="30" fill="#E3A49A"/><ellipse cx="120" cy="104" rx="20" ry="18" fill="#F0C4BA"/><rect x="116" y="114" width="20" height="44" rx="9" fill="#E3A49A"/><ellipse cx="140" cy="72" rx="16" ry="22" fill="#E3A49A" transform="rotate(20 140 72)"/><ellipse cx="158" cy="56" rx="26" ry="20" fill="#E3A49A"/><path d="M134 52 Q136 22 160 22 Q184 22 182 52 Z" fill="#F3D2B8"/><g fill="#C9867C"><circle cx="136" cy="54" r="3"/><circle cx="146" cy="50" r="3"/><circle cx="172" cy="50" r="3"/><circle cx="181" cy="54" r="3"/></g><circle cx="166" cy="58" r="4" fill="#2E3A33"/><path d="M168 68 Q174 71 180 66" stroke="#2E3A33" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="156" cy="66" r="4.5" fill="#F0A98C"/><path d="M138 94 Q150 98 152 106" stroke="#C9867C" stroke-width="6" fill="none" stroke-linecap="round"/>`,
+trombi:`<path d="M60 106 Q20 114 6 94 Q34 102 64 94 Z" fill="#659486"/><rect x="72" y="112" width="20" height="46" rx="9" fill="#659486"/><rect x="120" y="114" width="20" height="44" rx="9" fill="#659486"/><ellipse cx="100" cy="98" rx="50" ry="32" fill="#7FAFA0"/><rect x="90" y="116" width="18" height="42" rx="8" fill="#7FAFA0"/><rect x="136" y="116" width="18" height="42" rx="8" fill="#7FAFA0"/><path d="M132 92 Q148 66 158 50 L176 56 Q164 76 150 102 Z" fill="#7FAFA0"/><path d="M164 42 Q142 18 108 12 Q114 24 152 48 Z" fill="#F2C76B"/><ellipse cx="172" cy="50" rx="24" ry="15" fill="#7FAFA0"/><circle cx="176" cy="45" r="3.5" fill="#2E3A33"/><path d="M183 56 Q188 58 193 54" stroke="#2E3A33" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="168" cy="56" r="4" fill="#F0A98C"/><path d="M66 86 Q100 70 134 86" stroke="#9BC4B7" stroke-width="5" fill="none" stroke-linecap="round"/>`
+};
+
+const DINOS = [
+  {id:'bronti', name:'Bronti', kind:'Brachiosaurus', line:'Szia! Bronti vagyok, a leghosszabb nyakú.', desc:'Hosszú nyakú barát. A legmagasabb fák leveleit is eléri.'},
+  {id:'trici', name:'Trici', kind:'Triceratops', line:'Szia, Trici vagyok! Van még bogyó?', desc:'Három szarva van, és mindennél jobban szereti a bogyókat.'},
+  {id:'potyi', name:'Pötyi', kind:'Stegosaurus', line:'Hopp! Pötyi vagyok. Ugrálunk egyet?', desc:'A hátán nagy lapok sorakoznak. Imád ugrálni a köveken.'},
+  {id:'rexi', name:'Rexi', kind:'Tyrannosaurus rex', line:'Grrr! Csak viccelek, Rexi vagyok.', desc:'Nagy feje és pici keze van, de nagyon barátságos.'},
+  {id:'szarnyi', name:'Szárnyi', kind:'Pteranodon', line:'Szia, idefent! Szárnyi vagyok.', desc:'Repülő hüllő, a dínók rokona. Fentről látja az egész völgyet.'},
+  {id:'anki', name:'Anki', kind:'Ankylosaurus', line:'Anki vagyok, nézd a páncélomat!', desc:'Páncélos a háta, a farka végén pedig buzogány van.'},
+  {id:'buksi', name:'Buksi', kind:'Pachycephalosaurus', line:'Buksi vagyok, kemény a buksim!', desc:'Kerek, kemény a feje, de nagyon szelíd.'},
+  {id:'trombi', name:'Trombi', kind:'Parasaurolophus', line:'Tü-tü-tü! Trombi vagyok.', desc:'A taréján át úgy trombitál, mint egy hangszer.'}
+];
+const SLOTS = {
+  rexi:{x:18,y:276,s:.5}, bronti:{x:140,y:212,s:1.25}, buksi:{x:420,y:292,s:.5}, trici:{x:540,y:296,s:.5},
+  potyi:{x:668,y:272,s:.5}, trombi:{x:800,y:250,s:.5}, anki:{x:950,y:248,s:.5}, szarnyi:{x:330,y:116,s:.45,fly:true}
+};
+const GAMES = {
+  count:{name:'Tojásszámlálás', instr:'Érintsd meg a tojásokat egyenként, és számold meg őket!'},
+  add:{name:'Bogyólakoma', instr:'Tedd a bogyókat Trici tálába, aztán add össze őket!'},
+  order:{name:'Kőösvény', instr:'Rakd a köveket sorba, a legkisebbtől a legnagyobbig!'}
+};
+
+/* ---------- helpers ---------- */
+const ri = (a,b) => a + Math.floor(Math.random()*(b-a+1));
+const pick = arr => arr[Math.floor(Math.random()*arr.length)];
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function esc(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function today(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function choices(c, lo, hi){
+  const ok = x => x>=lo && x<=hi;
+  const adj = [c-1,c+1].filter(ok), far = [c-2,c+2].filter(ok);
+  const first = pick(adj.length?adj:far);
+  const rest = shuffle(adj.concat(far).filter(x=>x!==first));
+  return [c, first, rest[0]].sort((a,b)=>a-b);
+}
+const dinoById = id => DINOS.find(d=>d.id===id);
+const dinoName = id => (P.names && P.names[id]) || dinoById(id).name;
+const allHatched = () => DINOS.every(d=>P.hatched.includes(d.id));
+const nextDino = () => DINOS.find(d=>!P.hatched.includes(d.id));
+function dinoSVG(id,w,h,flip){ const inner = flip ? `<g transform="translate(220 0) scale(-1 1)">${ART[id]}</g>` : ART[id]; return `<svg viewBox="0 0 220 170" width="${Math.round(w)}" height="${Math.round(h)}" aria-hidden="true">${inner}</svg>`; }
+function eggSVG(w,h,fill,spot,set,stroke){ const sp = SPOTS[set||0].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${spot}"/>`).join(''); return `<svg aria-hidden="true" width="${w}" height="${h}" viewBox="-28 -34 56 68"><path d="${EGG}" fill="${fill}" stroke="#2E3A33" stroke-width="${stroke||2}"/>${sp}</svg>`; }
+
+/* ---------- persistence ---------- */
+const LS_KEY = 'dinovolgy.progress.v1';
+function defaults(){
+  return { v:1, updatedAt:0, eggs:0, totalEggs:0, pendingHatch:false, hatched:['bronti','trici'], names:{}, newIds:[],
+    settings:{ kidName:'', level:1, roundLen:3, voice:true, countAloud:true, sound:true, games:{count:true, add:true, order:true} },
+    stats:{ solved:{count:0, add:0, order:0}, rounds:0, days:{} } };
+}
+function normalize(p){
+  const d = defaults();
+  if(!p || typeof p!=='object') return d;
+  const o = Object.assign(d, p);
+  o.settings = Object.assign(defaults().settings, p.settings||{});
+  o.settings.games = Object.assign(defaults().settings.games, (p.settings&&p.settings.games)||{});
+  o.stats = Object.assign(defaults().stats, p.stats||{});
+  o.stats.solved = Object.assign(defaults().stats.solved, (p.stats&&p.stats.solved)||{});
+  o.stats.days = Object.assign({}, (p.stats&&p.stats.days)||{});
+  o.hatched = Array.isArray(p.hatched) ? p.hatched.filter(id=>ART[id]) : ['bronti','trici'];
+  if(!o.hatched.includes('bronti')) o.hatched.unshift('bronti');
+  o.names = Object.assign({}, p.names||{});
+  o.newIds = Array.isArray(p.newIds) ? p.newIds.filter(id=>ART[id]) : [];
+  if(o.pendingHatch && !nextDinoOf(o)) o.pendingHatch = false;
+  return o;
+}
+function nextDinoOf(o){ return DINOS.find(d=>!o.hatched.includes(d.id)); }
+function loadLocal(){ try{ const raw = localStorage.getItem(LS_KEY); return raw ? normalize(JSON.parse(raw)) : defaults(); }catch(e){ return defaults(); } }
+function saveLocal(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(P)); }catch(e){} }
+let P = loadLocal();
+function save(){
+  P.updatedAt = Date.now();
+  saveLocal();
+}
+
+/* ---------- sound & voice ---------- */
+let ac = null;
+function tone(freq, dur, type, gain, when){
+  if(!P.settings.sound) return;
+  try{
+    ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+    if(ac.state==='suspended') ac.resume();
+    const t = ac.currentTime + (when||0);
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.type = type||'sine'; o.frequency.setValueAtTime(freq, t);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(gain||0.07, t+0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, t+(dur||0.12));
+    o.connect(g); g.connect(ac.destination);
+    o.start(t); o.stop(t+(dur||0.12)+0.03);
+  }catch(e){}
+}
+const sfx = {
+  pop(){ tone(620+Math.random()*120, .09, 'sine', .07); },
+  soft(){ tone(300, .16, 'triangle', .06); tone(260, .18, 'triangle', .05, .1); },
+  chime(){ [523,659,784].forEach((f,i)=>tone(f, .24, 'sine', .07, i*.09)); },
+  knock(){ tone(180, .07, 'square', .03); tone(140, .07, 'square', .03, .08); },
+  hatch(){ [523,659,784,1047].forEach((f,i)=>tone(f, .32, 'sine', .07, i*.1)); },
+  hop(){ tone(440, .08, 'sine', .05); }
+};
+let huVoice = null;
+function pickVoice(){ try{ const vs = window.speechSynthesis.getVoices(); huVoice = vs.find(v=>/^hu/i.test(v.lang)) || null; }catch(e){} }
+if('speechSynthesis' in window){ pickVoice(); try{ window.speechSynthesis.onvoiceschanged = pickVoice; }catch(e){} }
+function say(text, force){
+  if(!force && !P.settings.voice) return;
+  try{
+    const s = window.speechSynthesis; if(!s) return;
+    s.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'hu-HU'; if(huVoice) u.voice = huVoice;
+    u.rate = 0.92; u.pitch = 1.08;
+    s.speak(u);
+  }catch(e){}
+}
+function sayNumber(n){ if(P.settings.countAloud) say(NUMW[n] || String(n), true); }
+
+/* ---------- session state ---------- */
+let S = { screen:'home', game:null, lastGame:'count', hatch:null, dexSel:null, dexEdit:false, confirmReset:false };
+
+/* ---------- tasks ---------- */
+function makeEggs(n){
+  const AW=560, AH=330, X0=100, Y0=82;
+  const cols = Math.max(3, Math.ceil(Math.sqrt(n*AW/AH)));
+  const rows = Math.ceil(n/cols);
+  const cw = AW/cols, ch = AH/rows;
+  const ew = Math.round(Math.min(88, cw*0.8, ch*0.78)), eh = Math.round(ew*1.24);
+  const cells = []; for(let r=0;r<rows;r++) for(let c=0;c<cols;c++) cells.push([r,c]);
+  const chosen = shuffle(cells).slice(0,n).sort((p,q)=>p[0]-q[0] || p[1]-q[1]);
+  const jx = Math.max(0,(cw-ew)/2-4), jy = Math.max(0,(ch-eh)/2-4);
+  const pals = ['#E8945A','#8FB08A','#7FA9BF'];
+  return chosen.map(([r,c],i)=>({
+    x: Math.round(X0 + c*cw + (cw-ew)/2 + (Math.random()*2-1)*jx),
+    y: Math.round(Y0 + r*ch + (ch-eh)/2 + (Math.random()*2-1)*jy),
+    w: ew, h: eh, col: pals[(r+c+i)%3], set: ri(0,2)
+  }));
+}
+function newTask(type){
+  const L = P.settings.level;
+  if(type==='count'){
+    const n = L===1 ? ri(4,10) : ri(9,20);
+    return { type, n, eggs:makeEggs(n), order:[], choices:choices(n,1,20), wrong:false, solved:false, pop:-1, wig:null };
+  }
+  if(type==='add'){
+    let a, b;
+    if(L===1){ const s = ri(3,10); a = ri(1,s-1); b = s-a; }
+    else { let s; do{ a=ri(2,10); b=ri(2,10); s=a+b; } while(s<8 || s>18 || (s<=10 && Math.random()<0.7)); }
+    return { type, a, b, tA:Array(a).fill(false), tB:Array(b).fill(false), seq:[], choices:choices(a+b,1,20), wrong:false, solved:false, wig:null };
+  }
+  const k = L===1 ? 4 : 5, max = L===1 ? 10 : 20;
+  const set = new Set(); while(set.size<k) set.add(ri(1,max));
+  const sorted = [...set].sort((x,y)=>x-y);
+  let bank; do{ bank = shuffle(sorted.slice()); } while(bank.every((v,i)=>v===sorted[i]));
+  return { type, sorted, bank, k:0, hint:false, solved:false, crossed:false, wig:null };
+}
+
+/* ---------- screens ---------- */
+const stage = document.getElementById('stage');
+
+function topBar(type, idx, total, solved){
+  const done = idx + (solved?1:0);
+  let dots = '';
+  for(let i=0;i<total;i++) dots += `<span class="dot ${i<done?'on':''}" aria-hidden="true"></span>`;
+  return `<div class="topbar">
+    <button class="round-btn" data-act="home" aria-label="Vissza a völgybe">${ICON.home}</button>
+    <div class="instr"><button class="speak" data-act="speak" aria-label="Felolvasás">${ICON.speaker}</button><span>${GAMES[type].instr}</span></div>
+    <div class="dots">${dots}<b>${Math.min(idx+1,total)}/${total}</b></div>
+  </div>`;
+}
+function doneSheet(msg){
+  return `<div class="done-sheet" role="status"><span class="check">${ICON.check}</span><span class="msg">${msg}</span><button class="btn btn-primary" data-act="next">Tovább ${ICON.arrow}</button></div>`;
+}
+function answerRow(q, t){
+  const wig = t.wig; t.wig = null;
+  const rs = ['r1','r2','r3'];
+  return `<div class="answer-row"><span class="q">${q}</span>${t.choices.map((v,i)=>`<button class="stone ${rs[i]} ${wig===v?'wiggle':''}" data-act="answer" data-v="${v}">${v}</button>`).join('')}</div>`;
+}
+
+/* home */
+function sceneSVG(){
+  return `<svg class="scene" aria-hidden="true" width="1180" height="820" viewBox="0 0 1180 820">
+  <rect width="1180" height="820" fill="#D6E7E4"/>
+  <circle cx="1010" cy="150" r="54" fill="#F6D58A"/>
+  <g class="cloud" fill="#F4F1E8"><ellipse cx="610" cy="150" rx="62" ry="22"/><ellipse cx="640" cy="132" rx="38" ry="28"/><ellipse cx="590" cy="138" rx="26" ry="20"/></g>
+  <g class="cloud slow" fill="#F4F1E8"><ellipse cx="820" cy="96" rx="44" ry="16"/><ellipse cx="840" cy="84" rx="26" ry="20"/></g>
+  <g fill="#E9E4DA"><circle cx="908" cy="216" r="14"/><circle cx="926" cy="194" r="18"/><circle cx="914" cy="166" r="13"/></g>
+  <path d="M770 400 L884 246 Q904 228 924 246 L1046 400 Z" fill="#B9AA98"/>
+  <path d="M884 246 Q904 228 924 246 L912 262 L898 254 Z" fill="#A39482"/>
+  <path d="M0 380 Q170 300 370 350 Q570 400 770 344 Q970 292 1180 352 L1180 820 L0 820 Z" fill="#B3CFA6"/>
+  <path d="M0 446 Q250 372 530 424 Q810 476 1180 404 L1180 820 L0 820 Z" fill="#94B98C"/>
+  <path d="M0 600 Q300 556 600 584 Q900 612 1180 570 L1180 820 L0 820 Z" fill="#83AB7C"/>
+  <path d="M1100 432 Q1092 372 1106 312" stroke="#8A6B4E" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <g fill="#5E8A5E"><ellipse cx="1078" cy="308" rx="40" ry="11" transform="rotate(-24 1078 308)"/><ellipse cx="1134" cy="306" rx="40" ry="11" transform="rotate(22 1134 306)"/><ellipse cx="1106" cy="292" rx="11" ry="34"/><ellipse cx="1080" cy="326" rx="34" ry="10" transform="rotate(32 1080 326)"/></g>
+  </svg>`;
+}
+function valleyDinos(){
+  return P.hatched.filter(id=>SLOTS[id]).map(id=>{
+    const s = SLOTS[id], w = 220*s.s, h = 170*s.s;
+    const isNew = P.newIds.includes(id);
+    return `<button class="vdino ${s.fly?'fly':''}" data-act="vdino" data-id="${id}" style="left:${s.x}px;top:${s.y}px;width:${Math.round(w)}px;height:${Math.round(h)}px" aria-label="${esc(dinoName(id))}"><span class="vd-art">${dinoSVG(id,w,h,false)}</span>${isNew?'<span class="newbadge">Új!</span>':''}</button>`;
+  }).join('');
+}
+const CARD_ART = {
+count:`<svg aria-hidden="true" viewBox="0 0 300 180" preserveAspectRatio="xMidYMid meet"><ellipse cx="150" cy="138" rx="118" ry="30" fill="#B98552"/><g fill="#FBF4E6" stroke="#2E3A33" stroke-width="2.5"><path transform="translate(102 106)" d="${EGG}"/><path transform="translate(150 96)" d="${EGG}"/><path transform="translate(198 106)" d="${EGG}"/><path transform="translate(126 126)" d="${EGG}"/><path transform="translate(174 126)" d="${EGG}"/></g><g fill="#E8945A"><circle cx="96" cy="98" r="4"/><circle cx="108" cy="112" r="5"/><circle cx="204" cy="100" r="4"/></g><g fill="#8FB08A"><circle cx="146" cy="84" r="5"/><circle cx="156" cy="98" r="3.5"/><circle cx="170" cy="120" r="4"/></g><g fill="#7FA9BF"><circle cx="122" cy="118" r="4.5"/><circle cx="130" cy="132" r="3.5"/><circle cx="192" cy="112" r="4"/></g><path d="M34 132 Q150 182 266 132 Q258 170 150 176 Q42 170 34 132 Z" fill="#9C6B3E"/><g stroke="#C9995F" stroke-width="3" stroke-linecap="round"><path d="M64 150 L94 146"/><path d="M124 162 L156 160"/><path d="M192 158 L224 152"/></g></svg>`,
+add:`<svg aria-hidden="true" viewBox="0 0 300 180" preserveAspectRatio="xMidYMid meet"><ellipse cx="150" cy="170" rx="160" ry="22" fill="#E9C3A2"/><g transform="translate(6 30) scale(0.78)">${'TRICI'}</g><g fill="#E8945A"><circle cx="222" cy="58" r="12"/><circle cx="246" cy="58" r="12"/><circle cx="234" cy="78" r="12"/></g><path d="M234 40 Q240 30 250 34 Q244 42 234 40 Z" fill="#5E8A5E"/><g fill="#5E8FB3"><circle cx="252" cy="122" r="12"/><circle cx="276" cy="122" r="12"/><circle cx="264" cy="142" r="12"/></g><path d="M264 104 Q270 94 280 98 Q274 106 264 104 Z" fill="#5E8A5E"/><g stroke="#2E3A33" stroke-width="4" stroke-linecap="round"><path d="M238 108 L238 128"/><path d="M228 118 L248 118"/></g></svg>`,
+order:`<svg aria-hidden="true" viewBox="0 0 300 180" preserveAspectRatio="xMidYMid meet"><path d="M0 62 Q75 50 150 62 Q225 74 300 62 L300 136 Q225 148 150 136 Q75 124 0 136 Z" fill="#8FBFD0"/><g stroke="#B9DCE6" stroke-width="3" fill="none" stroke-linecap="round"><path d="M20 84 Q30 78 40 84"/><path d="M250 118 Q260 112 270 118"/><path d="M196 80 Q206 74 216 80"/></g><g fill="#E5DCCB"><ellipse cx="66" cy="100" rx="34" ry="24"/><ellipse cx="150" cy="96" rx="34" ry="24"/><ellipse cx="234" cy="100" rx="34" ry="24"/></g><g font-family="'Baloo 2', Nunito, sans-serif" font-size="30" font-weight="700" fill="#2E3A33" text-anchor="middle"><text x="66" y="111">2</text><text x="150" y="107">5</text><text x="234" y="111">8</text></g><g fill="#7C9A72"><ellipse cx="40" cy="160" rx="9" ry="11"/><ellipse cx="30" cy="146" rx="4" ry="6"/><ellipse cx="40" cy="143" rx="4" ry="6"/><ellipse cx="50" cy="146" rx="4" ry="6"/></g><g fill="#7C9A72"><ellipse cx="258" cy="34" rx="9" ry="11"/><ellipse cx="248" cy="20" rx="4" ry="6"/><ellipse cx="258" cy="17" rx="4" ry="6"/><ellipse cx="268" cy="20" rx="4" ry="6"/></g></svg>`
+};
+CARD_ART.add = CARD_ART.add.replace("TRICI", ART.trici);
+const CARDS = {
+  count:{bg:'#F6E3C4', chip:'#F2C76B', chipT:'Számolás', sub:'Hány tojás van a fészekben?'},
+  add:{bg:'#F6D9C0', chip:'#F0B48A', chipT:'Összeadás', sub:'Etesd meg Tricit, és add össze!'},
+  order:{bg:'#CFE2E8', chip:'#A9C9D6', chipT:'Sorba rendezés', sub:'Rakd sorba a számköveket!'}
+};
+function homeHTML(){
+  const kid = P.settings.kidName ? esc(P.settings.kidName) : 'felfedező';
+  const enabled = ['count','add','order'].filter(g=>P.settings.games[g]);
+  const eggIcon = `<svg aria-hidden="true" width="30" height="36" viewBox="-28 -34 56 68"><path d="${EGG}" fill="#FBF4E6" stroke="#2E3A33" stroke-width="3.5"/><circle cx="-7" cy="-8" r="4" fill="#E8945A"/><circle cx="8" cy="8" r="5" fill="#E8945A"/></svg>`;
+  const pill = P.pendingHatch
+    ? `<button class="pill pill-hatch" data-act="hatch">${eggIcon}<span>Kikel egy dínó!</span></button>`
+    : `<button class="pill" data-act="dex">${eggIcon}<span>Dínótár</span><span class="pill-count">${allHatched() ? P.hatched.length+'/'+DINOS.length+' dínó' : P.eggs+'/3 tojás'}</span></button>`;
+  return `<section class="screen home">
+    ${sceneSVG()}
+    ${valleyDinos()}
+    <header class="home-head">
+      <div><h1>Szia, ${kid}!</h1><p>Mit fedezzünk fel ma a völgyben?</p></div>
+      <div class="head-actions">${pill}
+        <div class="lockwrap"><button class="lockbtn" data-hold="parent" aria-label="Szülői sarok, tartsd lenyomva">${ICON.lock}<svg class="ring" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="29"/></svg></button><span class="holdtip" hidden>Szülőknek: tartsd lenyomva!</span></div>
+      </div>
+    </header>
+    <nav class="cards" aria-label="Játékok" style="grid-template-columns:repeat(${enabled.length},minmax(0,1fr))">
+      ${enabled.map(g=>`<button class="card" data-act="start" data-g="${g}"><div class="card-art" style="background:${CARDS[g].bg}">${CARD_ART[g]}</div><div class="card-body"><span class="card-title">${GAMES[g].name}</span><span class="card-sub">${CARDS[g].sub}</span><div class="card-foot"><span class="chip" style="background:${CARDS[g].chip}">${CARDS[g].chipT}</span><span class="play" aria-hidden="true">${ICON.play}</span></div></div></button>`).join('')}
+    </nav>
+  </section>`;
+}
+
+/* counting */
+function countBody(t){
+  const counted = t.order.length;
+  let msg;
+  if(t.solved) msg = 'Köszönöm! Most már tudom, hány tojásom van.';
+  else if(t.wrong) msg = 'Majdnem! Számoljuk meg együtt még egyszer.';
+  else if(counted===0) msg = 'Segítesz megszámolni a tojásaimat?';
+  else if(counted<t.n) msg = 'Ügyes! Folytasd, amíg minden tojás kap egy számot.';
+  else msg = 'Mindet megérintetted! Mi volt az utolsó szám?';
+  const popI = t.pop; t.pop = -1;
+  const eggs = t.eggs.map((e,i)=>{
+    const pos = t.order.indexOf(i);
+    const b = Math.round(e.w*0.56), fs = Math.round(e.w*0.32);
+    const badge = pos>=0 ? `<span class="badge" style="width:${b}px;height:${b}px;font-size:${fs}px;left:${Math.round((e.w-b)/2)}px;top:${Math.round(e.h*0.54-b/2)}px">${pos+1}</span>` : '';
+    return `<button class="egg ${pos===-1?'':'counted'} ${popI===i?'pop':''}" data-act="egg" data-i="${i}" aria-label="${pos>=0?(pos+1)+'. megszámolt tojás':'Tojás'}" style="left:${e.x}px;top:${e.y}px;width:${e.w}px;height:${e.h}px">${eggSVG(e.w,e.h,'#FBF4E6',e.col,e.set)}${badge}</button>`;
+  }).join('');
+  return `<div class="nest-panel">
+    <svg aria-hidden="true" width="760" height="512" viewBox="0 0 760 512">
+      <g fill="#CFE0C3"><ellipse cx="60" cy="40" rx="70" ry="30"/><ellipse cx="720" cy="480" rx="90" ry="40"/></g>
+      <ellipse cx="380" cy="282" rx="344" ry="212" fill="#B98552"/>
+      <ellipse cx="380" cy="268" rx="302" ry="178" fill="#D6AE78"/>
+      <g stroke="#C29361" stroke-width="4" stroke-linecap="round"><path d="M90 300 L140 290"/><path d="M150 420 L210 414"/><path d="M520 428 L580 418"/><path d="M630 300 L676 316"/><path d="M300 452 L360 454"/></g>
+      <g stroke="#9C6B3E" stroke-width="5" stroke-linecap="round"><path d="M56 330 L106 350"/><path d="M650 350 L708 330"/><path d="M400 478 L460 474"/></g>
+    </svg>
+    ${eggs}
+  </div>
+  <div class="side-col" style="left:828px;width:312px;height:512px">
+    <div class="bubble" role="status">${msg}${t.wrong&&!t.solved?`<div><button class="btn btn-primary small" data-act="recount">${ICON.redo} Újraszámolom</button></div>`:''}</div>
+    ${dinoSVG('bronti',300,232,true)}
+  </div>
+  ${t.solved ? doneSheet(`Igen! ${t.n} tojás van a fészekben.`) : answerRow('Hány tojás van a fészekben?', t)}`;
+}
+
+/* addition */
+function berrySVG(c){ const f = c==='a' ? '#E8945A' : '#5E8FB3', hi = c==='a' ? '#F5C29B' : '#9BBCD3'; return `<svg aria-hidden="true" width="46" height="46" viewBox="0 0 56 56"><circle cx="28" cy="31" r="22" fill="${f}"/><circle cx="20" cy="24" r="6" fill="${hi}"/><path d="M28 10 Q34 2 42 6 Q36 12 28 10 Z" fill="#5E8A5E"/></svg>`; }
+function branchHTML(t, c){
+  const arr = c==='a' ? t.tA : t.tB, n = arr.length;
+  const color = c==='a' ? '#E8945A' : '#A9C9D6', word = c==='a' ? 'narancs' : 'kék';
+  const items = arr.map((gone,i)=> gone ? `<span class="berry-gone"><span></span></span>` : `<button class="berry" data-act="berry" data-c="${c}" data-i="${i}" aria-label="${word} bogyó">${berrySVG(c)}</button>`).join('');
+  return `<div class="branch"><div class="branch-lab"><span class="branch-num" style="background:${color}">${n}</span><span>${word}</span></div><div class="berries">${items}</div></div>`;
+}
+function frameHTML(t, from){
+  let cells = '';
+  for(let i=from;i<from+10;i++){ const k = t.seq[i]; cells += `<div class="cell">${k ? `<span class="${t.fresh && i===t.seq.length-1 ? 'new' : ''}" style="background:${k==='a'?'#E8945A':'#5E8FB3'}"></span>` : ''}</div>`; }
+  return `<div class="frame">${cells}</div>`;
+}
+function addBody(t){
+  const s = t.a + t.b, n = t.seq.length, two = s > 10;
+  const frames = frameHTML(t,0) + (two ? frameHTML(t,10) : ''); t.fresh = false;
+  let msg;
+  if(t.solved) msg = 'Nyamm, jóllaktam! Köszönöm!';
+  else if(t.wrong) msg = two ? 'Nézd meg a tálat: 10, és még mennyi?' : 'Számold meg a bogyókat a tálban!';
+  else if(n===0) msg = 'Éhes vagyok! Tedd a bogyókat a tálamba.';
+  else if(n===s) msg = 'Mind a tálban! Hány bogyó ez összesen?';
+  else if(two && n===10) msg = 'Az első tál tele van, abba pont 10 fér!';
+  else msg = 'Nyamm! Még, még!';
+  return `<div class="equation" role="img" aria-label="${t.a} meg ${t.b} egyenlő kérdőjel">
+      <span class="eq-num" style="background:#E8945A">${t.a}</span><span class="eq-op">+</span><span class="eq-num" style="background:#A9C9D6">${t.b}</span><span class="eq-op">=</span><span class="eq-q">${t.solved ? s : '?'}</span>
+    </div>
+    <div class="branches">${branchHTML(t,'a')}${branchHTML(t,'b')}</div>
+    <div class="bowl-panel">
+      <div class="frames"><span class="frames-lab">Trici tála</span>${frames}</div>
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;justify-content:space-between;align-items:center">
+        <div class="bubble" role="status" style="--tail:110px;font-size:22px;padding:16px 20px">${msg}</div>
+        ${dinoSVG('trici',268,207,true)}
+      </div>
+    </div>
+    ${t.solved ? doneSheet(`${t.a} + ${t.b} = ${s}. Trici jóllakott!`) : answerRow('Hány bogyót eszik meg Trici?', t)}`;
+}
+
+/* ordering */
+function slotX(i,k){ const x0=300, x1=800; return k>1 ? x0 + i*(x1-x0)/(k-1) : (x0+x1)/2; }
+function orderBody(t){
+  const k = t.sorted.length, done = t.k===k;
+  let msg;
+  if(done) msg = t.solved ? 'Hazaértem! Köszönöm a segítséget!' : 'Kész az ösvény! Indulok haza!';
+  else if(t.hint) msg = 'Hoppá! Van ennél kisebb kő is a parton.';
+  else if(t.k===0) msg = 'Segíts átkelni! Melyik a legkisebb szám?';
+  else msg = 'Szuper! Melyik szám jön utána?';
+  const wig = t.wig; t.wig = null;
+  const rs = ['r1','r2','r3'];
+  const slots = t.sorted.map((v,i)=>{ const left = Math.round(slotX(i,k)-52); return i<t.k ? `<div class="slot full ${rs[i%3]} ${t.fresh && i===t.k-1 ? 'new' : ''}" style="left:${left}px">${v}</div>` : `<div class="slot empty ${rs[i%3]}" style="left:${left}px" aria-hidden="true"></div>`; }).join('');
+  t.fresh = false;
+  const stones = t.bank.map((v,i)=> t.sorted.indexOf(v) < t.k ? `<span class="stone-gone ${rs[i%3]}" aria-hidden="true"></span>` : `<button class="stone ${rs[i%3]} ${wig===v?'wiggle':''}" data-act="stone" data-v="${v}">${v}</button>`).join('');
+  return `<div class="river-panel">
+      <svg aria-hidden="true" width="1100" height="420" viewBox="0 0 1100 420">
+        <path d="M230 0 Q200 105 240 210 Q280 315 230 420 L870 420 Q900 315 860 210 Q820 105 870 0 Z" fill="#8FBFD0"/>
+        <g stroke="#B9DCE6" stroke-width="4" fill="none" stroke-linecap="round"><path d="M300 70 Q318 60 336 70"/><path d="M520 330 Q538 320 556 330"/><path d="M690 80 Q708 70 726 80"/><path d="M400 360 Q418 350 436 360"/><path d="M760 320 Q778 310 796 320"/><path d="M590 60 Q608 50 626 60"/></g>
+        <g fill="#94B98C"><ellipse cx="80" cy="410" rx="140" ry="40"/><ellipse cx="1010" cy="410" rx="140" ry="40"/></g>
+        <path d="M1050 300 Q1042 220 1058 140" stroke="#8A6B4E" stroke-width="10" fill="none" stroke-linecap="round"/>
+        <g fill="#5E8A5E"><ellipse cx="1030" cy="138" rx="40" ry="11" transform="rotate(-24 1030 138)"/><ellipse cx="1086" cy="136" rx="40" ry="11" transform="rotate(22 1086 136)"/><ellipse cx="1058" cy="122" rx="11" ry="34"/></g>
+        <ellipse cx="970" cy="330" rx="74" ry="24" fill="#B98552"/>
+        <g fill="#FBF4E6" stroke="#2E3A33" stroke-width="2.5"><path transform="translate(948 304) scale(0.8)" d="${EGG}"/><path transform="translate(990 300) scale(0.8)" d="${EGG}"/></g>
+        <path d="M904 326 Q970 360 1036 326 Q1030 352 970 356 Q910 352 904 326 Z" fill="#9C6B3E"/>
+      </svg>
+      ${slots}
+      <div class="walker" id="walker" style="${t.crossed ? 'transform:translate(880px,0px)' : ''}">${dinoSVG('bronti',202,156,false)}</div>
+      <div class="river-bubble"><div class="bubble" role="status" style="--tail:90px">${msg}</div></div>
+    </div>
+    ${t.solved ? doneSheet('Bronti hazaért! Ügyes vagy!') : `<div class="tray"><span class="tray-lab">Számkövek a parton</span><div class="tray-row">${stones}</div></div>`}`;
+}
+
+function gameHTML(){
+  const g = S.game, t = g.task;
+  const body = t.type==='count' ? countBody(t) : t.type==='add' ? addBody(t) : orderBody(t);
+  return `<section class="screen game">${topBar(t.type, g.idx, g.total, t.solved)}${body}</section>`;
+}
+
+/* round reward */
+function successHTML(){
+  const all = allHatched();
+  const eggsIn = all ? 1 : Math.max(1, P.eggs);
+  const cols = [['#8FB08A'],['#E8945A'],['#7FA9BF']];
+  const layouts = { 1:[[260,184,1.6]], 2:[[212,200,1.3],[308,200,1.3]], 3:[[184,206,1.15],[336,206,1.15],[260,182,1.55]] };
+  const lay = layouts[eggsIn];
+  const eggs = lay.map(([x,y,s],i)=>{
+    const newest = i===lay.length-1;
+    const fill = all ? '#F2C76B' : '#FBF4E6';
+    const spot = cols[i%3][0];
+    const crack = newest && P.pendingHatch ? `<path d="M-18 -2 L-10 4 L-3 -4 L5 4 L12 -3 L19 2" stroke="#2E3A33" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>` : '';
+    return `<g transform="translate(${x} ${y}) scale(${s})"><g class="${newest?'new-egg':''}"><path d="${EGG}" fill="${fill}" stroke="#2E3A33" stroke-width="2"/><circle cx="-8" cy="-10" r="3.5" fill="${spot}"/><circle cx="9" cy="6" r="4.5" fill="${spot}"/><circle cx="-5" cy="18" r="3" fill="${spot}"/>${crack}</g></g>`;
+  }).join('');
+  const motion = P.pendingHatch ? `<g stroke="#2E3A33" stroke-width="3.5" fill="none" stroke-linecap="round"><path d="M204 118 Q194 132 204 146"/><path d="M190 108 Q178 132 190 156"/><path d="M316 118 Q326 132 316 146"/><path d="M330 108 Q342 132 330 156"/></g>` : '';
+  const sub = P.pendingHatch ? 'Megvan a harmadik tojás! Valami mozog a fészekben…'
+    : all ? 'Minden dínó kikelt már! Ez a tojás a gyűjteményed dísze.'
+    : `Kaptál egy tojást! Még ${3-P.eggs} tojás, és kikel egy új dínó.`;
+  const meter = all ? `<span class="meter-lab">${P.totalEggs} tojás összesen</span>` :
+    [0,1,2].map(i=>`<svg aria-hidden="true" width="34" height="42" viewBox="-28 -34 56 68"><path d="${EGG}" fill="${i<P.eggs?['#8FB08A','#E8945A','#7FA9BF'][i]:'none'}" stroke="${i<P.eggs?'#2E3A33':'#8A7E6A'}" stroke-width="3.5" ${i<P.eggs?'':'stroke-dasharray="8 6"'}/></svg>`).join('') + `<span class="meter-lab">${P.eggs}/3${P.pendingHatch?' – kikel!':''}</span>`;
+  const primary = P.pendingHatch
+    ? `<button class="btn btn-primary" data-act="hatch">Nézzük, ki kel ki! ${ICON.arrow}</button>`
+    : `<button class="btn btn-primary" data-act="again">Még egy kör ${ICON.arrow}</button>`;
+  return `<section class="screen success">
+    <button class="round-btn abs-tl" data-act="home" aria-label="Vissza a völgybe">${ICON.home}</button>
+    <div class="done-chip"><span>${ICON.checkSm}${GAMES[S.lastGame].name} – kész</span></div>
+    <div class="success-art"><svg aria-hidden="true" width="520" height="320" viewBox="0 0 520 320">
+      <circle cx="260" cy="170" r="150" fill="#F2DDAE"/><circle cx="260" cy="170" r="100" fill="#EED39C"/>
+      <g fill="#E8945A"><path transform="translate(120 70)" d="${STAR}"/><path transform="translate(436 190) scale(0.8)" d="${STAR}"/></g>
+      <g fill="#F2C76B"><path transform="translate(404 62) scale(1.2)" d="${STAR}"/></g>
+      <g fill="#8FB08A"><path transform="translate(84 196) scale(0.9)" d="${STAR}"/><path transform="translate(330 30) scale(0.6)" d="${STAR}"/></g>
+      <ellipse cx="260" cy="236" rx="150" ry="40" fill="#B98552"/>
+      ${eggs}${motion}
+      <path d="M110 228 Q260 300 410 228 Q400 276 260 282 Q120 276 110 228 Z" fill="#9C6B3E"/>
+      <g stroke="#C9995F" stroke-width="4" stroke-linecap="round"><path d="M150 256 L190 252"/><path d="M240 272 L284 272"/><path d="M330 254 L370 248"/></g>
+    </svg></div>
+    <div class="success-text"><h1>Ügyes vagy!</h1><p>${sub}</p><div class="meter">${meter}</div></div>
+    <div class="success-actions"><button class="btn btn-soft" data-act="home">Vissza a völgybe</button>${primary}</div>
+  </section>`;
+}
+
+/* hatching */
+function nameRowHTML(id, editing, ctx){
+  if(editing) return `<div class="name-row"><input id="dino-name" type="text" maxlength="14" value="${esc(dinoName(id))}" aria-label="A dínó neve" autocomplete="off"><button class="btn btn-primary small" data-act="rename-ok" data-ctx="${ctx}">Kész</button></div>`;
+  return `<div class="name-row"><h1 class="dname">${esc(dinoName(id))}</h1><button class="pencil" data-act="rename" data-ctx="${ctx}" aria-label="Átnevezem">${ICON.pencil}</button></div>`;
+}
+function hatchTextHTML(){
+  const h = S.hatch, d = dinoById(h.id);
+  if(!h.opened){
+    const hint = ['Koppints a tojásra, hogy kikeljen!','Kopp-kopp! Valaki mocorog benne…','Még egyet! Mindjárt kikel!'][Math.min(h.stage,2)];
+    return `<p class="hatch-hint" role="status">${hint}</p><div class="tapdots" aria-hidden="true">${[1,2,3].map(i=>`<span class="dot ${h.stage>=i?'on':''}"></span>`).join('')}</div>`;
+  }
+  return `<div class="hatch-card"><span class="new-chip">Új barát érkezett!</span>${nameRowHTML(h.id, h.editing, 'h')}<p class="kind">${d.kind}</p><p class="desc">${d.desc}</p><div class="hatch-actions"><button class="btn btn-soft" data-act="dex">Dínótár</button><button class="btn btn-primary" data-act="tovalley">Költözzön a völgybe!</button></div></div>`;
+}
+function hatchHTML(){
+  const h = S.hatch;
+  const cls = ['hatch-svg'];
+  for(let i=1;i<=Math.min(3,h.stage);i++) cls.push('st'+i);
+  if(h.opened) cls.push('opened','done');
+  const sparks = [[120,110,'#E8945A',1.4,0],[520,96,'#F2C76B',1.6,.1],[92,250,'#8FB08A',1.1,.2],[552,250,'#E8945A',1.2,.15],[210,60,'#8FB08A',.9,.25],[430,50,'#F2C76B',1,.05]]
+    .map(([x,y,c,s,dl])=>`<g transform="translate(${x} ${y}) scale(${s})"><path class="spark" style="animation-delay:${(0.25+dl).toFixed(2)}s" d="${STAR}" fill="${c}"/></g>`).join('');
+  const spots = `<circle cx="-24" cy="-40" r="7" fill="#7FA9BF"/><circle cx="22" cy="-58" r="5" fill="#7FA9BF"/><circle cx="30" cy="-20" r="8" fill="#7FA9BF"/>`;
+  const spotsBot = `<circle cx="-26" cy="34" r="8" fill="#7FA9BF"/><circle cx="18" cy="44" r="6" fill="#7FA9BF"/><circle cx="40" cy="20" r="4" fill="#7FA9BF"/>`;
+  return `<section class="screen hatch">
+    <button class="round-btn abs-tl" data-act="home" aria-label="Vissza a völgybe">${ICON.home}</button>
+    <div class="hatch-wrap">
+      <svg class="${cls.join(' ')}" aria-hidden="true" width="640" height="440" viewBox="0 0 640 440">
+        <circle cx="320" cy="236" r="200" fill="#F2DDAE"/><circle cx="320" cy="236" r="138" fill="#EED39C"/>
+        <ellipse cx="320" cy="368" rx="214" ry="44" fill="#B98552"/>
+        <g>${sparks}</g>
+        <g transform="translate(144 92) scale(1.6)"><g class="dino-pop">${ART[h.id]}</g></g>
+        <g transform="translate(320 246) scale(1.5)"><g class="egg-anim">
+          <g class="egg-whole"><path d="${BIGEGG}" fill="#FBF4E6" stroke="#2E3A33" stroke-width="2.5"/>${spots}${spotsBot}
+            <path class="crack c1" d="M-15 -10 L0 4 L15 -10" stroke="#2E3A33" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <path class="crack c2" d="M-46 -10 L-31 4 L-15 -10 M15 -10 L31 4 L46 -10" stroke="#2E3A33" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <path class="crack c3" d="M-62 4 L-46 -10 M46 -10 L62 4" stroke="#2E3A33" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+          <g class="shell shell-top"><path d="${TOPSHELL}" fill="#FBF4E6" stroke="#2E3A33" stroke-width="2.5" stroke-linejoin="round"/>${spots}</g>
+          <g class="shell shell-bot"><path d="${BOTSHELL}" fill="#FBF4E6" stroke="#2E3A33" stroke-width="2.5" stroke-linejoin="round"/>${spotsBot}</g>
+        </g></g>
+        <path d="M106 358 Q320 440 534 358 Q524 408 320 416 Q116 408 106 358 Z" fill="#9C6B3E"/>
+        <g stroke="#C9995F" stroke-width="5" stroke-linecap="round"><path d="M170 392 L220 386"/><path d="M296 408 L350 408"/><path d="M420 388 L470 380"/></g>
+      </svg>
+      ${h.opened ? '' : '<button class="egg-hit" data-act="crack" aria-label="Tojás, koppints rá!"></button>'}
+    </div>
+    <div class="hatch-text" id="hatch-text">${hatchTextHTML()}</div>
+  </section>`;
+}
+
+/* dino collection */
+function dexHTML(){
+  const sel = (S.dexSel && P.hatched.includes(S.dexSel)) ? S.dexSel : P.hatched[P.hatched.length-1];
+  const d = dinoById(sel);
+  const isNew = P.newIds.includes(sel);
+  const firstLocked = nextDino();
+  const nextEgg = allHatched() ? `<span>Minden dínó kikelt!</span>` :
+    `<span>Következő dínó</span>` + [0,1,2].map(i=>`<svg aria-hidden="true" width="28" height="34" viewBox="-28 -34 56 68"><path d="${EGG}" fill="${i<P.eggs?['#8FB08A','#E8945A','#7FA9BF'][i]:'none'}" stroke="${i<P.eggs?'#2E3A33':'#8A7E6A'}" stroke-width="4" ${i<P.eggs?'':'stroke-dasharray="8 6"'}/></svg>`).join('') + `<b>${P.eggs}/3</b>`;
+  const cards = DINOS.map(dn=>{
+    if(P.hatched.includes(dn.id)){
+      const scaleH = dn.id==='bronti' ? 100 : 96;
+      return `<button class="dcard ${dn.id===sel?'sel':''}" data-act="dexsel" data-id="${dn.id}" aria-pressed="${dn.id===sel}">${P.newIds.includes(dn.id)?'<span class="newtag">Új!</span>':''}${dinoSVG(dn.id,128,scaleH*0.97,false)}<span class="dn">${esc(dinoName(dn.id))}</span><span class="dk">${dn.kind}</span></button>`;
+    }
+    const lab = (firstLocked && dn.id===firstLocked.id) ? (P.pendingHatch ? 'Kikelhet!' : `Még ${3-P.eggs} tojás`) : 'Még nem kelt ki';
+    return `<div class="dcard locked"><svg role="img" aria-label="Még nem kelt ki" width="64" height="78" viewBox="-28 -34 56 68"><path d="${EGG}" fill="#D9CCB5"/><text x="0" y="12" text-anchor="middle" font-family="'Baloo 2', Nunito, sans-serif" font-size="30" font-weight="700" fill="#6B5E4B">?</text></svg><span>${lab}</span></div>`;
+  }).join('');
+  return `<section class="screen dex">
+    <div class="dex-top"><button class="round-btn" data-act="home" aria-label="Vissza a völgybe">${ICON.home}</button><h1>Dínótár</h1><div class="next-egg">${nextEgg}</div></div>
+    <div class="dex-left">
+      <span class="dex-chip ${isNew?'':'calm'}">${isNew ? 'Most kelt ki!' : 'Barátod'}</span>
+      <div class="dex-art">${dinoSVG(sel,320,247,false)}</div>
+      ${nameRowHTML(sel, S.dexEdit, 'd')}
+      <p class="kind">${d.kind}</p>
+      <p class="desc">${d.desc}</p>
+      ${P.pendingHatch ? `<button class="btn btn-primary" data-act="hatch">Kikel egy dínó! ${ICON.arrow}</button>` : `<button class="btn btn-primary" data-act="home">Vissza a völgybe</button>`}
+    </div>
+    <div class="dex-right">
+      <div class="dex-right-head"><h2>A gyűjteményed</h2><span class="dex-count">${P.hatched.length}/${DINOS.length} dínó</span></div>
+      <div class="dex-grid">${cards}</div>
+    </div>
+  </section>`;
+}
+
+/* parent corner */
+function segHTML(key, opts, cur){ return `<div class="seg" role="group">${opts.map(([v,l])=>`<button data-act="set" data-k="${key}" data-v="${v}" aria-pressed="${cur===v}">${l}</button>`).join('')}</div>`; }
+function swHTML(key, label){ return `<button class="switch" role="switch" data-act="toggle" data-k="${key}" aria-checked="${!!P.settings[key]}" aria-label="${label}"></button>`; }
+function parentHTML(){
+  const s = P.settings, st = P.stats;
+  const tdy = st.days[today()] || 0;
+  const tot = (st.solved.count||0) + (st.solved.add||0) + (st.solved.order||0);
+  const reset = S.confirmReset
+    ? `<div class="reset-row"><span class="reset-q">Biztosan törlöd? Minden tojás és kikelt dínó elvész, a beállítások megmaradnak.</span><button class="plainbtn" data-act="reset-no">Mégse</button><button class="dangerbtn" data-act="reset-yes">Igen, törlöm</button></div>`
+    : `<div class="reset-row"><button class="linkbtn" data-act="reset">Haladás törlése</button></div>`;
+  return `<section class="screen parent">
+    <div class="ptop"><h1>Szülői sarok</h1><button class="btn btn-primary small" data-act="home">Vissza a játékhoz</button></div>
+    <div class="pcard pset">
+      <h2>Beállítások</h2>
+      <div class="prow"><label for="kid-name">Gyermek neve</label><input id="kid-name" type="text" maxlength="16" value="${esc(s.kidName||'')}" placeholder="pl. Bence" autocomplete="off"></div>
+      <div class="prow"><span>Számkör</span>${segHTML('level',[[1,'10-ig'],[2,'20-ig']],s.level)}</div>
+      <div class="prow"><span>Feladat egy körben</span>${segHTML('roundLen',[[3,'3'],[5,'5']],s.roundLen)}</div>
+      <div class="prow wrap"><span>Elérhető játékok</span><div class="chips">${['count','add','order'].map(g=>`<button class="chipt" data-act="gtoggle" data-g="${g}" aria-pressed="${!!s.games[g]}">${s.games[g]?ICON.checkSm:''}${GAMES[g].name}</button>`).join('')}</div></div>
+      <div class="prow"><span>Utasítások felolvasása</span>${swHTML('voice','Utasítások felolvasása')}</div>
+      <div class="prow"><span>Hangos számolás</span>${swHTML('countAloud','Hangos számolás')}</div>
+      <div class="prow"><span>Hangeffektek</span>${swHTML('sound','Hangeffektek')}</div>
+    </div>
+    <div class="pcard pstats">
+      <h2>Haladás</h2>
+      <div class="tiles"><div class="tile"><b>${tdy}</b><span>feladat ma</span></div><div class="tile"><b>${tot}</b><span>összesen</span></div><div class="tile"><b>${P.hatched.length}/${DINOS.length}</b><span>dínó</span></div></div>
+      <ul class="plist">
+        <li><span>Tojásszámlálás</span><b>${st.solved.count||0}</b></li>
+        <li><span>Bogyólakoma</span><b>${st.solved.add||0}</b></li>
+        <li><span>Kőösvény</span><b>${st.solved.order||0}</b></li>
+        <li><span>Befejezett kör</span><b>${st.rounds||0}</b></li>
+        <li><span>Összegyűjtött tojás</span><b>${P.totalEggs||0}</b></li>
+      </ul>
+      <p class="pnote">Minden befejezett kör egy tojást ér, három tojásból kikel egy új dínó. Nincs időkorlát, és a rossz válasz nem jár büntetéssel: a dínó segít újra próbálni.</p>
+      <p class="pnote">A haladás ezen az iPaden van mentve. Ha törlöd az appot a kezdőképernyőről, a haladás is törlődik.</p>
+      ${reset}
+    </div>
+  </section>`;
+}
+
+/* ---------- render ---------- */
+function render(){
+  let html = '';
+  if(S.screen==='game' && S.game) html = gameHTML();
+  else if(S.screen==='success') html = successHTML();
+  else if(S.screen==='hatch' && S.hatch) html = hatchHTML();
+  else if(S.screen==='dex') html = dexHTML();
+  else if(S.screen==='parent') html = parentHTML();
+  else { S.screen = 'home'; html = homeHTML(); }
+  stage.innerHTML = html;
+}
+function go(screen){
+  S.screen = screen;
+  if(screen!=='parent') S.confirmReset = false;
+  if(screen!=='dex') S.dexEdit = false;
+  render();
+}
+
+/* ---------- game flow ---------- */
+function startGame(type){
+  if(!P.settings.games[type]) type = ['count','add','order'].find(g=>P.settings.games[g]) || 'count';
+  S.lastGame = type;
+  S.game = { type, idx:0, total:P.settings.roundLen, task:newTask(type) };
+  go('game');
+  say(GAMES[type].instr);
+}
+function solve(){
+  const t = S.game.task;
+  t.solved = true;
+  P.stats.solved[t.type] = (P.stats.solved[t.type]||0) + 1;
+  const d = today(); P.stats.days[d] = (P.stats.days[d]||0) + 1;
+  const keys = Object.keys(P.stats.days).sort(); while(keys.length>60) delete P.stats.days[keys.shift()];
+  save();
+  sfx.chime();
+  render();
+  const praise = pick(['Ügyes!','Szuper!','Pontosan!','Nagyon jó!','Ez az!']);
+  const line = t.type==='count' ? `${t.n} tojás van a fészekben.` : t.type==='add' ? `${t.a} meg ${t.b} egyenlő ${t.a+t.b}.` : 'Bronti hazaért.';
+  say(praise + ' ' + line);
+}
+function nextTask(){
+  const g = S.game;
+  if(g.idx + 1 < g.total){ g.idx++; g.task = newTask(g.type); render(); }
+  else finishRound();
+}
+function finishRound(){
+  P.stats.rounds = (P.stats.rounds||0) + 1;
+  P.totalEggs = (P.totalEggs||0) + 1;
+  if(!allHatched()){ P.eggs = Math.min(3, P.eggs + 1); if(P.eggs>=3) P.pendingHatch = true; }
+  save();
+  S.game = null;
+  go('success');
+  sfx.chime();
+  say(P.pendingHatch ? 'Ügyes vagy! Megvan a harmadik tojás. Valami mozog a fészekben!' : 'Ügyes vagy! Kaptál egy tojást.');
+}
+function answer(v){
+  const t = S.game.task; if(t.solved) return;
+  const correct = t.type==='count' ? t.n : t.a + t.b;
+  if(v===correct) return solve();
+  t.wrong = true; t.wig = v;
+  sfx.soft(); render();
+  say(t.type==='count' ? 'Majdnem! Számoljuk meg együtt még egyszer.' : 'Majdnem! Nézd meg a tálat, és számold meg a bogyókat.');
+}
+function eggTap(i){
+  const t = S.game.task; if(t.solved || t.order.includes(i)) return;
+  t.order.push(i); t.pop = i; t.wrong = false;
+  sfx.pop(); sayNumber(t.order.length); render();
+}
+function berryTap(c,i){
+  const t = S.game.task; if(t.solved) return;
+  const arr = c==='a' ? t.tA : t.tB; if(arr[i]) return;
+  arr[i] = true; t.seq.push(c); t.wrong = false; t.fresh = true;
+  sfx.pop(); sayNumber(t.seq.length); render();
+}
+function stoneTap(v){
+  const t = S.game.task; if(t.solved || t.k>=t.sorted.length) return;
+  if(t.sorted.indexOf(v) < t.k) return;
+  if(v===t.sorted[t.k]){
+    t.k++; t.hint = false; t.fresh = true; sfx.pop();
+    if(P.settings.countAloud) say(NUMW[v] || String(v), true);
+    render();
+    if(t.k===t.sorted.length) cross();
+  } else {
+    t.hint = true; t.wig = v; sfx.soft(); render();
+    say('Hoppá! Van ennél kisebb kő is.');
+  }
+}
+function cross(){
+  const t = S.game.task, k = t.sorted.length;
+  const walker = document.getElementById('walker');
+  const finish = () => { t.crossed = true; if(S.screen==='game' && S.game && S.game.task===t) solve(); };
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!walker || typeof walker.animate!=='function' || reduce){ setTimeout(finish, 300); return; }
+  const frames = [{transform:'translate(0px,0px)'}];
+  let px = 0;
+  for(let i=0;i<k;i++){
+    const x = Math.round(slotX(i,k) - 101 - 14);
+    frames.push({transform:`translate(${Math.round((px+x)/2)}px,-205px)`});
+    frames.push({transform:`translate(${x}px,-137px)`});
+    px = x;
+  }
+  frames.push({transform:`translate(${Math.round((px+880)/2)}px,-170px)`});
+  frames.push({transform:'translate(880px,0px)'});
+  const per = 420;
+  const anim = walker.animate(frames, {duration: per*(k+1), easing:'ease-in-out', fill:'forwards'});
+  for(let i=0;i<=k;i++) setTimeout(()=>sfx.hop(), per*(i+0.6));
+  anim.onfinish = finish;
+}
+
+/* hatching flow */
+function openHatch(){
+  const d = nextDino();
+  if(!d){ P.pendingHatch = false; save(); return go('dex'); }
+  S.hatch = { id:d.id, stage:0, opened:false, editing:false };
+  go('hatch');
+  say('Koppints a tojásra, hogy kikeljen!');
+}
+function crackTap(){
+  const h = S.hatch; if(!h || h.opened || h.stage>=3) return;
+  h.stage++;
+  sfx.knock();
+  const svg = stage.querySelector('.hatch-svg');
+  svg.classList.add('st'+h.stage);
+  const egg = svg.querySelector('.egg-anim');
+  egg.classList.remove('knock'); void egg.getBoundingClientRect(); egg.classList.add('knock');
+  document.getElementById('hatch-text').innerHTML = hatchTextHTML();
+  if(h.stage>=3) setTimeout(openEgg, 420);
+}
+function openEgg(){
+  const h = S.hatch; if(!h || h.opened) return;
+  h.opened = true;
+  if(!P.hatched.includes(h.id)) P.hatched.push(h.id);
+  if(!P.newIds.includes(h.id)) P.newIds.push(h.id);
+  P.eggs = Math.max(0, P.eggs - 3); P.pendingHatch = false;
+  save();
+  const svg = stage.querySelector('.hatch-svg');
+  if(svg) svg.classList.add('opened');
+  const hit = stage.querySelector('.egg-hit'); if(hit) hit.remove();
+  sfx.hatch();
+  say('Megérkezett ' + dinoName(h.id) + '!');
+  setTimeout(()=>{ if(S.screen==='hatch' && S.hatch===h){ document.getElementById('hatch-text').innerHTML = hatchTextHTML(); } }, 1000);
+}
+function commitName(ctx){
+  const input = document.getElementById('dino-name');
+  const id = ctx==='h' ? S.hatch.id : ((S.dexSel && P.hatched.includes(S.dexSel)) ? S.dexSel : P.hatched[P.hatched.length-1]);
+  const v = input ? input.value.trim().slice(0,14) : '';
+  if(v && v!==dinoById(id).name) P.names[id] = v; else delete P.names[id];
+  save();
+  if(ctx==='h'){ S.hatch.editing = false; document.getElementById('hatch-text').innerHTML = hatchTextHTML(); }
+  else { S.dexEdit = false; render(); }
+  say('Szia, ' + dinoName(id) + '!');
+}
+function startRename(ctx){
+  if(ctx==='h'){ S.hatch.editing = true; document.getElementById('hatch-text').innerHTML = hatchTextHTML(); }
+  else { S.dexEdit = true; render(); }
+  const input = document.getElementById('dino-name');
+  if(input){ input.focus(); try{ input.select(); }catch(e){} }
+}
+
+/* valley */
+let vbTimer = null;
+function vdinoTap(id, btn){
+  const art = btn.querySelector('.vd-art');
+  art.classList.remove('bounce'); void art.offsetWidth; art.classList.add('bounce');
+  sfx.pop();
+  const d = dinoById(id);
+  const line = d.line.replace(d.name, dinoName(id));
+  say(line);
+  const old = stage.querySelector('.vbubble'); if(old) old.remove();
+  const b = document.createElement('div');
+  b.className = 'vbubble'; b.setAttribute('role','status'); b.textContent = line;
+  const cx = btn.offsetLeft + btn.offsetWidth/2;
+  b.style.left = Math.max(20, Math.min(1180-300, cx-140)) + 'px';
+  b.style.top = Math.max(110, btn.offsetTop - 74) + 'px';
+  stage.querySelector('.home').appendChild(b);
+  clearTimeout(vbTimer); vbTimer = setTimeout(()=>{ b.remove(); }, 2800);
+  if(P.newIds.includes(id)){ P.newIds = P.newIds.filter(x=>x!==id); save(); const nb = btn.querySelector('.newbadge'); if(nb) nb.remove(); }
+}
+
+/* ---------- events ---------- */
+stage.addEventListener('click', e=>{
+  const el = e.target.closest('[data-act]'); if(!el || !stage.contains(el)) return;
+  const act = el.dataset.act;
+  switch(act){
+    case 'home': try{ window.speechSynthesis && window.speechSynthesis.cancel(); }catch(err){} S.game = null; go('home'); break;
+    case 'start': startGame(el.dataset.g); break;
+    case 'speak': if(S.game) say(GAMES[S.game.task.type].instr, true); break;
+    case 'egg': eggTap(+el.dataset.i); break;
+    case 'recount': { const t = S.game.task; t.order = []; t.wrong = false; render(); say('Kezdjük az elejéről! Egy…'); break; }
+    case 'answer': answer(+el.dataset.v); break;
+    case 'berry': berryTap(el.dataset.c, +el.dataset.i); break;
+    case 'stone': stoneTap(+el.dataset.v); break;
+    case 'next': nextTask(); break;
+    case 'again': startGame(S.lastGame); break;
+    case 'hatch': openHatch(); break;
+    case 'crack': crackTap(); break;
+    case 'rename': startRename(el.dataset.ctx); break;
+    case 'rename-ok': commitName(el.dataset.ctx); break;
+    case 'tovalley': { const id = S.hatch && S.hatch.id; S.hatch = null; go('home'); const b = id && stage.querySelector(`.vdino[data-id="${id}"]`); if(b) setTimeout(()=>{ const a=b.querySelector('.vd-art'); a.classList.add('bounce'); }, 250); break; }
+    case 'dex': S.dexSel = (S.hatch && S.hatch.opened) ? S.hatch.id : S.dexSel; go('dex'); break;
+    case 'dexsel': { const id = el.dataset.id; S.dexSel = id; S.dexEdit = false; if(P.newIds.includes(id)){ P.newIds = P.newIds.filter(x=>x!==id); save(); } render(); say(dinoName(id) + '. ' + dinoById(id).desc); break; }
+    case 'vdino': vdinoTap(el.dataset.id, el); break;
+    case 'set': { P.settings[el.dataset.k] = +el.dataset.v; save(); render(); break; }
+    case 'toggle': { const k = el.dataset.k; P.settings[k] = !P.settings[k]; save(); render(); break; }
+    case 'gtoggle': { const g = el.dataset.g, games = P.settings.games; const on = Object.keys(games).filter(x=>games[x]); if(games[g] && on.length===1) break; games[g] = !games[g]; save(); render(); break; }
+    case 'reset': S.confirmReset = true; render(); break;
+    case 'reset-no': S.confirmReset = false; render(); break;
+    case 'reset-yes': { const keep = P.settings; P = defaults(); P.settings = keep; S.confirmReset = false; save(); render(); break; }
+  }
+});
+stage.addEventListener('keydown', e=>{
+  if(e.target && e.target.id==='dino-name' && e.key==='Enter'){ e.preventDefault(); const b = stage.querySelector('[data-act="rename-ok"]'); if(b) commitName(b.dataset.ctx); }
+});
+stage.addEventListener('input', e=>{
+  if(e.target && e.target.id==='kid-name'){ P.settings.kidName = e.target.value.slice(0,16); save(); }
+});
+
+/* parent gate: press and hold */
+let holdTimer = null, holdEl = null, tipTimer = null;
+stage.addEventListener('pointerdown', e=>{
+  const el = e.target.closest('[data-hold]'); if(!el) return;
+  holdEl = el; el.classList.add('holding');
+  holdTimer = setTimeout(()=>{ holdTimer = null; if(holdEl) holdEl.classList.remove('holding'); holdEl = null; S.confirmReset = false; go('parent'); }, 2000);
+});
+function cancelHold(){
+  if(!holdTimer) return;
+  clearTimeout(holdTimer); holdTimer = null;
+  if(holdEl){
+    holdEl.classList.remove('holding');
+    const tip = holdEl.parentNode && holdEl.parentNode.querySelector('.holdtip');
+    if(tip){ tip.hidden = false; clearTimeout(tipTimer); tipTimer = setTimeout(()=>{ tip.hidden = true; }, 1800); }
+  }
+  holdEl = null;
+}
+['pointerup','pointercancel'].forEach(t=>stage.addEventListener(t, cancelHold));
+stage.addEventListener('pointerout', e=>{ if(holdEl && e.target.closest('[data-hold]')===holdEl && !holdEl.contains(e.relatedTarget)) cancelHold(); });
+stage.addEventListener('contextmenu', e=>{ if(e.target.closest('[data-hold]')) e.preventDefault(); });
+
+/* ---------- fit to screen ---------- */
+const fitEl = document.getElementById('fit');
+const app = document.getElementById('app');
+const hint = document.getElementById('rotate-hint');
+function fit(){
+  const portrait = window.innerHeight > window.innerWidth * 1.05;
+  hint.hidden = !portrait;
+  const cs = getComputedStyle(app);
+  const w = app.clientWidth, h = app.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) - (portrait ? 40 : 0);
+  const s = Math.max(0.1, Math.min(w/1180, h/820));
+  fitEl.style.width = Math.floor(1180*s) + 'px';
+  fitEl.style.height = Math.floor(820*s) + 'px';
+  stage.style.transform = 'scale(' + s + ')';
+}
+window.addEventListener('resize', fit);
+window.addEventListener('orientationchange', ()=>setTimeout(fit, 120));
+
+/* ---------- boot ---------- */
+document.addEventListener('gesturestart', e=>e.preventDefault());
+document.addEventListener('touchmove', e=>{ if(!(e.target && e.target.closest && e.target.closest('input'))) e.preventDefault(); }, {passive:false});
+try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(()=>{}); }catch(e){}
+fit();
+render();
+if('serviceWorker' in navigator && (location.protocol==='https:' || location.hostname==='localhost' || location.hostname==='127.0.0.1')){
+  window.addEventListener('load', ()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
+}
+})();
+</script>
+</body>
+</html>
